@@ -19,6 +19,7 @@ from session import (
     check_session_limit,
     generate_session_id,
 )
+from resources import facts
 
 # Load environment variables
 load_dotenv()
@@ -35,13 +36,13 @@ async def lifespan(_: FastAPI):
     # Attempt Upstash Redis connection ping
     try:
         from upstash_redis import Redis
-        r = Redis.from_env()
-        r.ping()
+        redis_client = Redis.from_env() # Initialize Redis client using environment variables
+        redis_client.ping() # This will raise an exception if the connection fails
         print("Upstash Redis connected")
     except Exception as e:
         print(f"Warning: Upstash Redis connection failed - {str(e)}")
 
-    yield
+    yield # This always runs, even if Redis failed
 
 
 # Initialize FastAPI app
@@ -55,7 +56,7 @@ cors_origin = os.getenv("CORS_ORIGIN", "http://localhost:3000")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[cors_origin],
-    allow_credentials=False,
+    allow_credentials=False, # Set to False for better security since we don't need cookies
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
@@ -71,11 +72,9 @@ class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
 
-
 class ChatResponse(BaseModel):
     response: str
     session_id: str
-
 
 @app.get("/")
 async def root():
@@ -137,10 +136,11 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     session_check = check_session_limit(session_id)
     if not session_check["allowed"]:
+        contact_email = facts.get("email", "hasnainasif52@gmail.com")
         return ChatResponse(
             response=(
                 "You have reached the daily message limit for this session. "
-                "Please reach out directly at hasnainsaf52@gmail.com"
+                f"Please reach out directly at {contact_email}"
             ),
             session_id=session_id,
         )
