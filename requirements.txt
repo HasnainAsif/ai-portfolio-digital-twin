@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+openai
+python-dotenv
+upstash-redis
+supabase
+slowapi
+pydantic
+pypdf
+python-multipart
+
