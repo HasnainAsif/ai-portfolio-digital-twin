@@ -49,7 +49,6 @@ OFFTOPIC_RESPONSE = (
     "help you that I can answer?"
 )
 
-
 def classify_intent(message: str) -> str:
     """
     Classify incoming message into intent categories using keyword matching.

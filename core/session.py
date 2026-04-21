@@ -77,14 +77,14 @@ def save_conversation(session_id: str, messages: List) -> None:
 
     try:
         key = f"{SESSION_KEY_PREFIX}{session_id}"
-        data = json.dumps(messages)
+        data = json.dumps(messages) # json string of the conversation history
         redis_client.setex(key, SESSION_TTL, data)
 
     except Exception as e:
         print(f"Error saving conversation for session {session_id}: {e}", file=sys.stderr)
 
 
-def check_session_limit(session_id: str) -> bool:
+def check_session_limit(session_id: str) -> dict:
     """
     Check if session is within daily message limit (50 messages per day).
     Increments the counter on each call.
@@ -93,12 +93,18 @@ def check_session_limit(session_id: str) -> bool:
         session_id: The session identifier
 
     Returns:
-        True if session is within limit (or Redis unreachable)
-        False if daily limit exceeded
+        Dictionary with:
+            - allowed (bool): True if session is within limit, False if limit exceeded
+            - remaining_messages (int): Number of messages remaining in daily quota
+            - daily_limit (int): Total daily message limit
     """
     if not redis_client:
         # Fail open - allow through if Redis is unreachable
-        return True
+        return {
+            "allowed": True,
+            "remaining_messages": DAILY_LIMIT,
+            "daily_limit": DAILY_LIMIT
+        }
 
     try:
         key = f"{LIMIT_KEY_PREFIX}{session_id}"
@@ -106,17 +112,29 @@ def check_session_limit(session_id: str) -> bool:
         # Increment the counter
         current_count = redis_client.incr(key)
 
-        # Set TTL on first creation
+        # Set TTL on first message of the day
         if current_count == 1:
-            redis_client.expire(key, DAILY_LIMIT_TTL) # Set TTL to 24 hours on first increment
+            redis_client.expire(key, DAILY_LIMIT_TTL)  # Set TTL to 24 hours on first increment
 
-        # Check if within limit
-        return current_count <= DAILY_LIMIT
+        within_limit = current_count <= DAILY_LIMIT # Check if within limit
+        remaining = max(0, DAILY_LIMIT - current_count)
+
+        return {
+            "allowed": within_limit,
+            "remaining_messages": remaining,
+            "daily_limit": DAILY_LIMIT,
+            # "reset_time": "2026-04-17T00:00:00Z",
+            # "reason": "daily_limit_exceeded",
+        }
 
     except Exception as e:
         print(f"Error checking session limit for {session_id}: {e}", file=sys.stderr)
         # Fail open - allow through if error occurs
-        return True
+        return {
+            "allowed": True,
+            "remaining_messages": DAILY_LIMIT,
+            "daily_limit": DAILY_LIMIT
+        }
 
 
 def generate_session_id() -> str:

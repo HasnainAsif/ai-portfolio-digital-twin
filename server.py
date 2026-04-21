@@ -9,40 +9,99 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI, RateLimitError, APIError
 from pydantic import BaseModel
 
-from analytics import log_conversation
-from context import build_prompt
-from intent import classify_intent, INTENT_OFFTOPIC, OFFTOPIC_RESPONSE
-from security import limiter, validate_input, filter_output, log_abuse
-from session import (
+from core.analytics import log_conversation
+from core.context import build_prompt
+from core.intent import classify_intent, INTENT_OFFTOPIC, OFFTOPIC_RESPONSE
+from core.security import limiter, validate_input, filter_output, log_abuse
+from core.session import (
+    UPSTASH_REDIS_URL,
+    UPSTASH_REDIS_TOKEN,
     load_conversation,
     save_conversation,
     check_session_limit,
     generate_session_id,
 )
-from resources import facts
+from core.resources import facts
 
 # Load environment variables
 load_dotenv()
 
 
+# Environment validation function
+def validate_environment():
+    """
+    Validate required and optional environment variables at startup.
+    - Required vars: server will not accept requests if missing (but will still start)
+    - Optional vars: server logs warnings if missing
+    """
+    required_vars = ["OPENAI_API_KEY", "UPSTASH_REDIS_URL", "CORS_ORIGIN"]
+    optional_vars = {
+        "SUPABASE_URL": "Analytics disabled",
+        "SUPABASE_KEY": "Analytics disabled",
+        "UPSTASH_REDIS_TOKEN": "Advanced Redis features unavailable",
+    }
+
+    missing_required = []
+    missing_optional = []
+
+    # Check required variables
+    for var in required_vars:
+        if not os.getenv(var):
+            missing_required.append(var)
+
+    # Check optional variables
+    for var, warning_msg in optional_vars.items():
+        if not os.getenv(var):
+            missing_optional.append((var, warning_msg))
+
+    # Print results
+    if missing_required:
+        print(f"⚠️  MISSING REQUIRED ENVIRONMENT VARIABLES:")
+        for var in missing_required:
+            print(f"   - {var}")
+        print("   Server will continue but may not function properly.")
+
+    if missing_optional:
+        print(f"⚠️  OPTIONAL FEATURES DISABLED:")
+        for var, warning_msg in missing_optional:
+            print(f"   - {var}: {warning_msg}")
+
+    if not missing_required and not missing_optional:
+        print("✓ Environment OK")
+
+
 # Lifespan event handler
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    """Initialize on startup, cleanup on shutdown"""
+    """
+    Initialize on startup, cleanup on shutdown.
+    The lifespan pattern ensures resources are properly initialized before the app
+    starts accepting requests, and properly cleaned up when the app shuts down.
+    """
     print("Digital Twin API starting...")
     print(f"Loaded OpenAI model: {openai_model}")
     print("Context files loaded")
 
+    # Validate environment variables
+    validate_environment()
+
     # Attempt Upstash Redis connection ping
     try:
         from upstash_redis import Redis
-        redis_client = Redis.from_env() # Initialize Redis client using environment variables
+        # db = Database.connect()
+        redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN) # Initialize Redis client with explicit parameters to avoid issues with from_env() in some environments
+        # redis_client = Redis.from_env() # Initialize Redis client using environment variables
         redis_client.ping() # This will raise an exception if the connection fails
         print("Upstash Redis connected")
+
     except Exception as e:
         print(f"Warning: Upstash Redis connection failed - {str(e)}")
 
-    yield # This always runs, even if Redis failed
+    yield # Server is now running and accepting requests
+    ### Add cleanup code here if needed (e.g., redis_client.close())
+    # db.close()
+    # cache.disconnect()
+    # logger.info("App shutdown complete")
 
 
 # Initialize FastAPI app
@@ -50,6 +109,8 @@ app = FastAPI(title="Hasnain Digital Twin API", lifespan=lifespan)
 
 # Add SlowAPI rate limiting middleware
 app.state.limiter = limiter
+
+contact_email = facts.get("email", "hasnainasif52@gmail.com")
 
 # Configure CORS
 cors_origin = os.getenv("CORS_ORIGIN", "http://localhost:3000")
@@ -63,7 +124,7 @@ app.add_middleware(
 
 # Initialize OpenAI client
 openai_api_key = os.getenv("OPENAI_API_KEY")
-openai_model = os.getenv("OPENAI_MODEL", "gpt-4o")
+openai_model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 openai_client = AsyncOpenAI(api_key=openai_api_key) # Use the new AsyncOpenAI client for async calls
 
 
@@ -87,15 +148,31 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint with service status"""
+    # Check Redis connectivity with 2-second timeout
+    redis_status = "unavailable"
+    try:
+        from upstash_redis import Redis
+        redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN) # Initialize Redis client with explicit parameters to avoid issues with from_env() in some environments
+        # Attempt ping with timeout
+        redis_client.ping()
+        redis_status = "connected"
+    except Exception:
+        redis_status = "unavailable"
+
+    # Check analytics status (enabled only if both SUPABASE_URL and SUPABASE_KEY are set)
+    analytics_status = "enabled" if (os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY")) else "disabled"
+
     return {
         "status": "ok",
         "model": openai_model,
+        "redis": redis_status,
+        "analytics": analytics_status,
     }
 
 
 @app.post("/chat", response_model=ChatResponse)
-@limiter.limit("10/minute")
+@limiter.limit("10/minute") # 10 requests per minute per IP are allowed to prevent abuse
 async def chat(request: Request, chat_request: ChatRequest):
     """Chat endpoint with rate limiting and security checks"""
 
@@ -103,10 +180,8 @@ async def chat(request: Request, chat_request: ChatRequest):
     session_id = chat_request.session_id
 
     # Step 1: SECURITY CHECK
-    validation_result = validate_input(chat_request.message)
-    if not validation_result["valid"]:
-        reason = validation_result.get("reason", "unknown")
-
+    is_valid, reason = validate_input(chat_request.message)
+    if not is_valid:
         if reason == "injection_attempt":
             await log_abuse(
                 client_ip,
@@ -136,7 +211,6 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     session_check = check_session_limit(session_id)
     if not session_check["allowed"]:
-        contact_email = facts.get("email", "hasnainasif52@gmail.com")
         return ChatResponse(
             response=(
                 "You have reached the daily message limit for this session. "
@@ -177,26 +251,33 @@ async def chat(request: Request, chat_request: ChatRequest):
             )
             break
         except RateLimitError:
+            # Handle OpenAI rate limit errors (quota exceeded for this minute)
             if retry_count < max_retries:
+                # Retry is available: wait longer (2s) to allow OpenAI quota to reset
                 await asyncio.sleep(2)
                 retry_count += 1
             else:
+                # No more retries: inform user to try again in a moment
                 return ChatResponse(
                     response=(
                         "I'm having a brief technical issue. Please try again in a "
-                        "moment or reach out at hasnainsaf52@gmail.com"
+                        f"moment or reach out at {contact_email}"
                     ),
                     session_id=session_id,
                 )
         except APIError:
+            # Handle transient OpenAI API errors (timeouts, 5xx errors, etc.)
             if retry_count < max_retries:
+                # Retry is available: wait briefly (1s) before retrying
+                # Transient errors usually resolve quickly
                 await asyncio.sleep(1)
                 retry_count += 1
             else:
+                # No more retries: inform user to try again in a moment
                 return ChatResponse(
                     response=(
                         "I'm having a brief technical issue. Please try again in a "
-                        "moment or reach out at hasnainsaf52@gmail.com"
+                        f"moment or reach out at {contact_email}"
                     ),
                     session_id=session_id,
                 )
@@ -205,14 +286,14 @@ async def chat(request: Request, chat_request: ChatRequest):
         return ChatResponse(
             response=(
                 "I'm having a brief technical issue. Please try again in a "
-                "moment or reach out at hasnainsaf52@gmail.com"
+                f"moment or reach out at {contact_email}"
             ),
             session_id=session_id,
         )
 
     # Step 6: OUTPUT FILTER
     response_text = openai_response.choices[0].message.content
-    filtered_response = filter_output(response_text, "hasnainsaf52@gmail.com")
+    filtered_response = filter_output(response_text, contact_email)
 
     # Step 7: SAVE AND RESPOND
     conversation.append({"role": "user", "content": chat_request.message})
@@ -232,7 +313,6 @@ async def chat(request: Request, chat_request: ChatRequest):
     )
 
     return ChatResponse(response=filtered_response, session_id=session_id)
-
 
 if __name__ == "__main__":
     import uvicorn

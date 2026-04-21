@@ -65,3 +65,4 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+__init__.py
