@@ -15,6 +15,8 @@ load_dotenv()
 UPSTASH_REDIS_URL = os.getenv("UPSTASH_REDIS_URL")
 UPSTASH_REDIS_TOKEN = os.getenv("UPSTASH_REDIS_TOKEN")
 USE_UPSTASH_REDIS = os.getenv("USE_UPSTASH_REDIS", "false").lower() == "true"
+RESTRICT_CONVERSATIONS_PER_IP = os.getenv("RESTRICT_CONVERSATIONS_PER_IP", "true").lower() == "true"
+MAX_CONVERSATIONS_PER_IP = int(os.getenv("MAX_CONVERSATIONS_PER_IP", "15"))
 
 # Create Upstash Redis client only when flag is enabled
 redis_client = None
@@ -31,15 +33,18 @@ DAILY_LIMIT = 50 # Max 50 messages per session per day
 DAILY_LIMIT_TTL = 86400  # 24 hours - daily limit resets after 24 hours
 SESSION_KEY_PREFIX = "twin:session:"
 LIMIT_KEY_PREFIX = "twin:limit:"
+IP_CONV_KEY_PREFIX = "twin:ip_conv:"
 MAX_CONVERSATION_LENGTH = 16 # Max 16 messages (8 exchanges) in conversation history to keep in Redis
 
 # In-memory fallback store used when Redis is disabled or unavailable
 _memory_store: dict = {}
+_ip_conv_store: dict = {}  # tracks conversation count per IP when Redis is unavailable
 
 
 def load_conversation(session_id: str) -> List:
     if not USE_UPSTASH_REDIS or not redis_client:
-        return list(_memory_store.get(session_id, []))
+        messages = _memory_store.get(session_id, [])
+        return list(messages[-MAX_CONVERSATION_LENGTH:]) if len(messages) > MAX_CONVERSATION_LENGTH else list(messages)
 
     try:
         key = f"{SESSION_KEY_PREFIX}{session_id}"
@@ -122,6 +127,39 @@ def check_session_limit(session_id: str) -> dict:
             "daily_limit": DAILY_LIMIT
         }
 
+def check_ip_conversation_limit(ip: str) -> dict:
+    """
+    Check if an IP has exceeded the max allowed conversations.
+    Increments the counter when a new conversation is started.
+
+    Returns:
+        Dictionary with:
+            - allowed (bool): True if under limit
+            - conversations_started (int): How many conversations this IP has started
+            - max_conversations (int): The configured limit
+    """
+    if not RESTRICT_CONVERSATIONS_PER_IP:
+        return {"allowed": True, "conversations_started": 0, "max_conversations": MAX_CONVERSATIONS_PER_IP}
+
+    if not USE_UPSTASH_REDIS or not redis_client:
+        count = _ip_conv_store.get(ip, 0)
+        if count >= MAX_CONVERSATIONS_PER_IP:
+            return {"allowed": False, "conversations_started": count, "max_conversations": MAX_CONVERSATIONS_PER_IP}
+        _ip_conv_store[ip] = count + 1
+        return {"allowed": True, "conversations_started": count + 1, "max_conversations": MAX_CONVERSATIONS_PER_IP}
+
+    try:
+        # Within single day, an IP can only start a certain number of conversations to prevent abuse
+        key = f"{IP_CONV_KEY_PREFIX}{ip}"
+        count = redis_client.incr(key)
+        if count == 1:
+            redis_client.expire(key, DAILY_LIMIT_TTL)
+        allowed = count <= MAX_CONVERSATIONS_PER_IP
+        return {"allowed": allowed, "conversations_started": count, "max_conversations": MAX_CONVERSATIONS_PER_IP}
+
+    except Exception as e:
+        print(f"Error checking IP conversation limit for {ip}: {e}", file=sys.stderr)
+        return {"allowed": True, "conversations_started": 0, "max_conversations": MAX_CONVERSATIONS_PER_IP}
 
 def generate_session_id() -> str:
     """

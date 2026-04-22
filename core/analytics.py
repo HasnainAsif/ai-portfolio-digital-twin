@@ -56,6 +56,7 @@ async def log_conversation(
     output_tokens: int = 0,
     total_tokens: int = 0,
     cached_input_tokens: int = 0,
+    response_time_ms: int = 0,
 ) -> None:
     """
     Log a conversation turn to Supabase (production) or a local JSONL file (testing).
@@ -69,6 +70,7 @@ async def log_conversation(
             "visitor_ip": visitor_ip,
             "intent": intent,
             "model": model,
+            "response_time_ms": response_time_ms,
             "input_tokens": input_tokens,
             "output_tokens": output_tokens,
             "total_tokens": total_tokens,

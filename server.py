@@ -1,6 +1,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 import os
+import time
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -20,6 +21,7 @@ from core.session import (
     load_conversation,
     save_conversation,
     check_session_limit,
+    check_ip_conversation_limit,
     generate_session_id,
 )
 from core.analytics import USE_SUPABASE_POSTGRES
@@ -213,6 +215,15 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     # Step 2: SESSION SETUP
     if not session_id:
+        ip_check = check_ip_conversation_limit(client_ip)
+        if not ip_check["allowed"]:
+            return ChatResponse(
+                response=(
+                    "You've reached the maximum number of conversations allowed from your network. "
+                    f"Please reach out directly at {contact_email}"
+                ),
+                session_id="",
+            )
         session_id = generate_session_id()
 
     session_check = check_session_limit(session_id)
@@ -246,16 +257,19 @@ async def chat(request: Request, chat_request: ChatRequest):
     openai_response = None
     retry_count = 0
     max_retries = 1
+    openai_response_time_ms = 0
 
     # create separate function for OpenAI response
     while retry_count <= max_retries:
         try:
+            _t0 = time.monotonic()
             openai_response = await openai_client.chat.completions.create(
                 model=openai_model,
                 messages=messages,
                 max_completion_tokens=1500,
                 # temperature=0.6,
             )
+            openai_response_time_ms = int((time.monotonic() - _t0) * 1000)
             break
         except RateLimitError:
             # Handle OpenAI rate limit errors (quota exceeded for this minute)
@@ -320,6 +334,7 @@ async def chat(request: Request, chat_request: ChatRequest):
                 output_tokens=_usage.completion_tokens,
                 total_tokens=_usage.total_tokens,
                 cached_input_tokens=_cached,
+                response_time_ms=openai_response_time_ms,
             )
         )
         return ChatResponse(response=failure_response, session_id=session_id)
@@ -348,6 +363,7 @@ async def chat(request: Request, chat_request: ChatRequest):
             output_tokens=usage.completion_tokens,
             total_tokens=usage.total_tokens,
             cached_input_tokens=cached_input_tokens,
+            response_time_ms=openai_response_time_ms,
         )
     )
 
