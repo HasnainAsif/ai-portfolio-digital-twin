@@ -5,7 +5,7 @@ import time
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI, RateLimitError, APIError
 from pydantic import BaseModel
@@ -20,8 +20,9 @@ from core.session import (
     USE_UPSTASH_REDIS,
     load_conversation,
     save_conversation,
-    check_session_limit,
-    check_ip_conversation_limit,
+    # check_session_limit,  # disabled: session depth limit removed, using IP conversation limit only
+    is_ip_blocked,
+    increment_ip_conversation,
     generate_session_id,
 )
 from core.analytics import USE_SUPABASE_POSTGRES
@@ -187,11 +188,24 @@ async def chat(request: Request, chat_request: ChatRequest):
     client_ip = request.client.host
     session_id = chat_request.session_id
 
-    # Step 1: SECURITY CHECK
+    # Step 1: IP BLOCK CHECK — blocks IPs that started 15+ conversations (breadth limit, hard 403)
+    # distinct from check_session_limit which caps messages within a single conversation/session (depth limit)
+    if is_ip_blocked(client_ip):
+        # raise HTTPException(status_code=403, detail="Access denied.")
+        return ChatResponse(
+            response=(
+                "It looks like you've had quite a few conversations today — I hope they were helpful! "
+                "You've reached the daily limit for new conversations from your network. "
+                f"Feel free to reach out directly at {contact_email} — Hasnain typically responds within 24 hours."
+            ),
+            session_id=session_id or "",
+        )
+
+    # Step 2: SECURITY CHECK
     is_valid, reason = validate_input(chat_request.message)
     if not is_valid:
         if reason == "injection_attempt":
-            await log_abuse(
+            log_abuse(
                 client_ip,
                 session_id or "none",
                 reason,
@@ -213,28 +227,20 @@ async def chat(request: Request, chat_request: ChatRequest):
                 session_id=session_id or "unknown",
             )
 
-    # Step 2: SESSION SETUP
+
+    # Step 3: SESSION SETUP
     if not session_id:
-        ip_check = check_ip_conversation_limit(client_ip)
-        if not ip_check["allowed"]:
-            return ChatResponse(
-                response=(
-                    "You've reached the maximum number of conversations allowed from your network. "
-                    f"Please reach out directly at {contact_email}"
-                ),
-                session_id="",
-            )
         session_id = generate_session_id()
 
-    session_check = check_session_limit(session_id)
-    if not session_check["allowed"]:
-        return ChatResponse(
-            response=(
-                "You have reached the daily message limit for this session. "
-                f"Please reach out directly at {contact_email}"
-            ),
-            session_id=session_id,
-        )
+    # session_check = check_session_limit(session_id)
+    # if not session_check["allowed"]:
+    #     return ChatResponse(
+    #         response=(
+    #             "You have reached the daily message limit for this session. "
+    #             f"Please reach out directly at {contact_email}"
+    #         ),
+    #         session_id=session_id,
+    #     )
 
     conversation = load_conversation(session_id)
 
@@ -313,9 +319,48 @@ async def chat(request: Request, chat_request: ChatRequest):
         return ChatResponse(response=failure_response, session_id=session_id)
 
     # Step 6: OUTPUT FILTER
+    finish_reason = openai_response.choices[0].finish_reason
     response_text = openai_response.choices[0].message.content
+    # if finish_reason == "length":
+    #     ### Problem: If a model generate answer on second turn, First call will not be logged and we will never know the exact token usage for that call.
+    #     # If model fails to generate response within max_completion_tokens limit, then retry with a concise instruction to fit within token limit
+    #     print(f"[warning] retrying with concise instruction")
+    #     try:
+    #         concise_messages = messages[:-1] + [
+    #             {"role": "user", "content": chat_request.message + "\n\nPlease provide a short and concise answer."},
+    #         ]
+    #         _t0 = time.monotonic()
+    #         openai_response = await openai_client.chat.completions.create(
+    #             model=openai_model,
+    #             messages=concise_messages,
+    #             max_completion_tokens=1500,
+    #         )
+    #         openai_response_time_ms = int((time.monotonic() - _t0) * 1000)
+    #         finish_reason = openai_response.choices[0].finish_reason
+    #         response_text = openai_response.choices[0].message.content
+    #     except Exception as e:
+    #         print(f"[warning] Concise retry failed: {e}")
+    #         return ChatResponse(
+    #             response=(
+    #                 "I'm having a brief technical issue. Please try again in a "
+    #                 f"moment or reach out at {contact_email}"
+    #             ),
+    #             session_id=session_id,
+    #         )
+    if finish_reason == "length":
+        # This error occurs, when the model fails to generate response within max_completion_tokens limit
+        # Logging of this error is handled in the empty response case below.
+        return ChatResponse(
+            response=(
+                "Your question might be too broad for me to answer fully. "
+                "Could you try asking something more specific? For example, ask about a particular skill, project, or experience."
+            ),
+            session_id=session_id,
+            )
+
     if not response_text:
-        print(f"[warning] Empty response from OpenAI — finish_reason={openai_response.choices[0].finish_reason} usage={openai_response.usage}")
+        # This error occurs most of time, when the model fails to generate response within max_completion_tokens limit
+        print(f"[warning] Empty response from OpenAI — finish_reason={finish_reason} usage={openai_response.usage}")
         failure_response = (
             "I'm having a brief technical issue. Please try again in a "
             f"moment or reach out at {contact_email}"
@@ -342,13 +387,15 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     usage = openai_response.usage
     cached_input_tokens = getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
-    print(f"[model]: {openai_model}; [tokens] session={session_id} input={usage.prompt_tokens} output={usage.completion_tokens} total={usage.total_tokens} cached={cached_input_tokens}")
 
     # Step 7: SAVE AND RESPOND
     conversation.append({"role": "user", "content": chat_request.message})
     conversation.append({"role": "assistant", "content": filtered_response})
 
     save_conversation(session_id, conversation)
+
+    # Step 8: INCREMENT IP CONVERSATION COUNT — only after successful response generation, to avoid penalizing users for failed attempts or malicious requests that don't reach the OpenAI call
+    increment_ip_conversation(client_ip)
 
     # Fire and forget logging
     asyncio.create_task(
