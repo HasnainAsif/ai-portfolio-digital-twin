@@ -238,35 +238,60 @@ The system automatically reloads all data files when the server restarts.
 
 ### Railway Setup
 
-1. **Connect Repository**
-   - Go to [Railway.app](https://railway.app)
-   - Create new project and connect your GitHub repo
-   - Select this repo and branch
+#### 1. Add a `Procfile`
 
-2. **Configure Service**
-   - Select "Deploy with Railway" or add new service manually
-   - Set deployment command: `python server.py`
-   - Set root directory: `./` (or `/backend` if using monorepo structure)
+Create a `Procfile` in the project root so Railway knows how to start the server:
 
-3. **Set Environment Variables**
-   In Railway dashboard → Variables, add:
-   ```
-   OPENAI_API_KEY=sk-...
-   UPSTASH_REDIS_URL=https://...redis.upstash.io
-   UPSTASH_REDIS_TOKEN=...
-   CORS_ORIGIN=https://your-frontend-domain.com
-   SUPABASE_URL=https://...supabase.co
-   SUPABASE_KEY=eyJ...
-   OPENAI_MODEL=gpt-4o
-   ```
+```
+web: uvicorn server:app --host 0.0.0.0 --port $PORT
+```
 
-4. **Domain Setup**
-   - Railway assigns a public URL automatically
-   - (Optional) Add custom domain in Railway dashboard
+> Do **not** hardcode the port — Railway injects `$PORT` automatically.
 
-5. **Deploy**
-   - Push to main branch to trigger auto-deploy
-   - Monitor logs in Railway dashboard
+#### 2. Pin your Python version
+
+Create a `runtime.txt` in the project root:
+
+```
+python-3.12
+```
+
+Match this to the version in your `.python-version` file.
+
+#### 3. Connect Repository
+
+- Go to [Railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
+- Connect your GitHub account and select this repository
+- Railway auto-detects Python and installs dependencies from `requirements.txt`
+
+#### 4. Set Environment Variables
+
+In Railway dashboard → your service → **Variables**, add:
+
+| Variable | Description |
+|---|---|
+| `OPENAI_API_KEY` | Your OpenAI API key |
+| `OPENAI_MODEL` | e.g. `gpt-4o` |
+| `CORS_ORIGIN` | Your frontend URL (e.g. `https://yoursite.com`) |
+| `USE_UPSTASH_REDIS` | `true` |
+| `USE_SUPABASE_POSTGRES` | `true` |
+| `UPSTASH_REDIS_URL` | Your Upstash Redis URL |
+| `UPSTASH_REDIS_TOKEN` | Your Upstash token |
+| `SUPABASE_URL` | Your Supabase project URL |
+| `SUPABASE_KEY` | Your Supabase service role key |
+| `RESTRICT_CONVERSATIONS_PER_IP` | `true` |
+| `MAX_CONVERSATIONS_PER_IP` | `15` |
+
+#### 5. Generate a Public Domain
+
+Railway dashboard → your service → **Settings** → **Networking** → **Generate Domain**
+
+Update `CORS_ORIGIN` in your frontend to point to this domain.
+
+#### 6. Deploy
+
+- Push to your connected branch to trigger auto-deploy
+- Monitor build and runtime logs in the Railway **Deployments** tab
 
 ### Required Services (Third-Party)
 
