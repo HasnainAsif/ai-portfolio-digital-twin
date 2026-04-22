@@ -9,21 +9,21 @@ import uuid
 import sys
 from typing import List
 from dotenv import load_dotenv
-from upstash_redis import Redis
-
 # Load environment variables
 load_dotenv()
 
-# Initialize Redis client
 UPSTASH_REDIS_URL = os.getenv("UPSTASH_REDIS_URL")
 UPSTASH_REDIS_TOKEN = os.getenv("UPSTASH_REDIS_TOKEN")
+USE_UPSTASH_REDIS = os.getenv("USE_UPSTASH_REDIS", "false").lower() == "true"
 
-# Create Upstash Redis client
-try:
-    redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN)
-except Exception as e:
-    print(f"Error initializing Upstash Redis client: {e}", file=sys.stderr)
-    redis_client = None
+# Create Upstash Redis client only when flag is enabled
+redis_client = None
+if USE_UPSTASH_REDIS:
+    try:
+        from upstash_redis import Redis
+        redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN)
+    except Exception as e:
+        print(f"Error initializing Upstash Redis client: {e}", file=sys.stderr)
 
 # Constants
 SESSION_TTL = 7200  # 2 hours - session expires after 2 hours of inactivity
@@ -33,30 +33,22 @@ SESSION_KEY_PREFIX = "twin:session:"
 LIMIT_KEY_PREFIX = "twin:limit:"
 MAX_CONVERSATION_LENGTH = 16 # Max 16 messages (8 exchanges) in conversation history to keep in Redis
 
+# In-memory fallback store used when Redis is disabled or unavailable
+_memory_store: dict = {}
+
 
 def load_conversation(session_id: str) -> List:
-    """
-    Load conversation history for a session from Redis.
-
-    Args:
-        session_id: The session identifier
-
-    Returns:
-        List of conversation messages, trimmed to last 16 items (8 exchanges)
-        Returns empty list if session doesn't exist or Redis is unreachable
-    """
-    if not redis_client:
-        return [] # means its a new session, or redis is down, so we start fresh with empty conversation history
+    if not USE_UPSTASH_REDIS or not redis_client:
+        return list(_memory_store.get(session_id, []))
 
     try:
         key = f"{SESSION_KEY_PREFIX}{session_id}"
         data = redis_client.get(key)
 
         if data is None:
-            return [] # No existing session, start with empty conversation history
+            return []
 
         messages = json.loads(data)
-        # Trim to last 16 items (8 exchanges)
         return messages[-MAX_CONVERSATION_LENGTH:] if len(messages) > MAX_CONVERSATION_LENGTH else messages
 
     except Exception as e:
@@ -65,19 +57,13 @@ def load_conversation(session_id: str) -> List:
 
 
 def save_conversation(session_id: str, messages: List) -> None:
-    """
-    Save conversation history to Redis with TTL.
-
-    Args:
-        session_id: The session identifier
-        messages: List of conversation messages
-    """
-    if not redis_client:
+    if not USE_UPSTASH_REDIS or not redis_client:
+        _memory_store[session_id] = messages[-MAX_CONVERSATION_LENGTH:]
         return
 
     try:
         key = f"{SESSION_KEY_PREFIX}{session_id}"
-        data = json.dumps(messages) # json string of the conversation history
+        data = json.dumps(messages)
         redis_client.setex(key, SESSION_TTL, data)
 
     except Exception as e:

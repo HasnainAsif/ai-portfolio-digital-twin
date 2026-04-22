@@ -16,11 +16,13 @@ from core.security import limiter, validate_input, filter_output, log_abuse
 from core.session import (
     UPSTASH_REDIS_URL,
     UPSTASH_REDIS_TOKEN,
+    USE_UPSTASH_REDIS,
     load_conversation,
     save_conversation,
     check_session_limit,
     generate_session_id,
 )
+from core.analytics import USE_SUPABASE_POSTGRES
 from core.resources import facts
 
 # Load environment variables
@@ -34,12 +36,16 @@ def validate_environment():
     - Required vars: server will not accept requests if missing (but will still start)
     - Optional vars: server logs warnings if missing
     """
-    required_vars = ["OPENAI_API_KEY", "UPSTASH_REDIS_URL", "CORS_ORIGIN"]
-    optional_vars = {
-        "SUPABASE_URL": "Analytics disabled",
-        "SUPABASE_KEY": "Analytics disabled",
-        "UPSTASH_REDIS_TOKEN": "Advanced Redis features unavailable",
-    }
+    required_vars = ["OPENAI_API_KEY", "CORS_ORIGIN"]
+    optional_vars = {}
+
+    if USE_UPSTASH_REDIS:
+        required_vars.append("UPSTASH_REDIS_URL")
+        optional_vars["UPSTASH_REDIS_TOKEN"] = "Advanced Redis features unavailable"
+
+    if USE_SUPABASE_POSTGRES:
+        optional_vars["SUPABASE_URL"] = "Analytics disabled"
+        optional_vars["SUPABASE_KEY"] = "Analytics disabled"
 
     missing_required = []
     missing_optional = []
@@ -86,16 +92,16 @@ async def lifespan(_: FastAPI):
     validate_environment()
 
     # Attempt Upstash Redis connection ping
-    try:
-        from upstash_redis import Redis
-        # db = Database.connect()
-        redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN) # Initialize Redis client with explicit parameters to avoid issues with from_env() in some environments
-        # redis_client = Redis.from_env() # Initialize Redis client using environment variables
-        redis_client.ping() # This will raise an exception if the connection fails
-        print("Upstash Redis connected")
-
-    except Exception as e:
-        print(f"Warning: Upstash Redis connection failed - {str(e)}")
+    if USE_UPSTASH_REDIS:
+        try:
+            from upstash_redis import Redis
+            redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN)
+            redis_client.ping()
+            print("Upstash Redis connected")
+        except Exception as e:
+            print(f"Warning: Upstash Redis connection failed - {str(e)}")
+    else:
+        print("Upstash Redis disabled (USE_UPSTASH_REDIS=false)")
 
     yield # Server is now running and accepting requests
     ### Add cleanup code here if needed (e.g., redis_client.close())
@@ -149,19 +155,19 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint with service status"""
-    # Check Redis connectivity with 2-second timeout
-    redis_status = "unavailable"
-    try:
-        from upstash_redis import Redis
-        redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN) # Initialize Redis client with explicit parameters to avoid issues with from_env() in some environments
-        # Attempt ping with timeout
-        redis_client.ping()
-        redis_status = "connected"
-    except Exception:
+    if USE_UPSTASH_REDIS:
         redis_status = "unavailable"
+        try:
+            from upstash_redis import Redis
+            redis_client = Redis(url=UPSTASH_REDIS_URL, token=UPSTASH_REDIS_TOKEN)
+            redis_client.ping()
+            redis_status = "connected"
+        except Exception:
+            redis_status = "unavailable"
+    else:
+        redis_status = "disabled"
 
-    # Check analytics status (enabled only if both SUPABASE_URL and SUPABASE_KEY are set)
-    analytics_status = "enabled" if (os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY")) else "disabled"
+    analytics_status = "enabled" if USE_SUPABASE_POSTGRES else "disabled"
 
     return {
         "status": "ok",
@@ -246,18 +252,21 @@ async def chat(request: Request, chat_request: ChatRequest):
             openai_response = await openai_client.chat.completions.create(
                 model=openai_model,
                 messages=messages,
-                max_tokens=600,
+                max_completion_tokens=600,
                 # temperature=0.6,
             )
+            print(openai_response)
             break
         except RateLimitError:
             # Handle OpenAI rate limit errors (quota exceeded for this minute)
             if retry_count < max_retries:
                 # Retry is available: wait longer (2s) to allow OpenAI quota to reset
+                print("OpenAI rate limit exceeded. Attempting retry after delay...")
                 await asyncio.sleep(2)
                 retry_count += 1
             else:
                 # No more retries: inform user to try again in a moment
+                print("OpenAI rate limit exceeded. Informing user to try again later.")
                 return ChatResponse(
                     response=(
                         "I'm having a brief technical issue. Please try again in a "
@@ -265,15 +274,14 @@ async def chat(request: Request, chat_request: ChatRequest):
                     ),
                     session_id=session_id,
                 )
-        except APIError:
+        except APIError as e:
             # Handle transient OpenAI API errors (timeouts, 5xx errors, etc.)
             if retry_count < max_retries:
-                # Retry is available: wait briefly (1s) before retrying
-                # Transient errors usually resolve quickly
+                print(f"OpenAI API error occurred (attempt {retry_count + 1}): {e}")
                 await asyncio.sleep(1)
                 retry_count += 1
             else:
-                # No more retries: inform user to try again in a moment
+                print(f"OpenAI API error persisted after retry: {e}")
                 return ChatResponse(
                     response=(
                         "I'm having a brief technical issue. Please try again in a "
@@ -283,6 +291,7 @@ async def chat(request: Request, chat_request: ChatRequest):
                 )
 
     if not openai_response:
+        print("Failed to get response from OpenAI after retries. Informing user to try again later.")
         return ChatResponse(
             response=(
                 "I'm having a brief technical issue. Please try again in a "
@@ -296,7 +305,8 @@ async def chat(request: Request, chat_request: ChatRequest):
     filtered_response = filter_output(response_text, contact_email)
 
     usage = openai_response.usage
-    print(f"[model]: {openai_model}; [tokens] session={session_id} input={usage.prompt_tokens} output={usage.completion_tokens} total={usage.total_tokens}")
+    cached_input_tokens = getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
+    print(f"[model]: {openai_model}; [tokens] session={session_id} input={usage.prompt_tokens} output={usage.completion_tokens} total={usage.total_tokens} cached={cached_input_tokens}")
 
     # Step 7: SAVE AND RESPOND
     conversation.append({"role": "user", "content": chat_request.message})
@@ -312,6 +322,11 @@ async def chat(request: Request, chat_request: ChatRequest):
             intent,
             chat_request.message,
             filtered_response,
+            model=openai_model,
+            input_tokens=usage.prompt_tokens,
+            output_tokens=usage.completion_tokens,
+            total_tokens=usage.total_tokens,
+            cached_input_tokens=cached_input_tokens,
         )
     )
 
