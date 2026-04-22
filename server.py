@@ -253,7 +253,7 @@ async def chat(request: Request, chat_request: ChatRequest):
             openai_response = await openai_client.chat.completions.create(
                 model=openai_model,
                 messages=messages,
-                max_completion_tokens=1000,
+                max_completion_tokens=1500,
                 # temperature=0.6,
             )
             break
