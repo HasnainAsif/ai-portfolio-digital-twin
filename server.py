@@ -253,10 +253,9 @@ async def chat(request: Request, chat_request: ChatRequest):
             openai_response = await openai_client.chat.completions.create(
                 model=openai_model,
                 messages=messages,
-                max_completion_tokens=600,
+                max_completion_tokens=1000,
                 # temperature=0.6,
             )
-            print(openai_response)
             break
         except RateLimitError:
             # Handle OpenAI rate limit errors (quota exceeded for this minute)
@@ -303,7 +302,15 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     # Step 6: OUTPUT FILTER
     response_text = openai_response.choices[0].message.content
-    print(f"[debug] finish_reason={openai_response.choices[0].finish_reason} content_type={type(response_text)} content_preview={str(response_text)[:100]}")
+    if not response_text:
+        print(f"[warning] Empty response from OpenAI — finish_reason={openai_response.choices[0].finish_reason} usage={openai_response.usage}")
+        return ChatResponse(
+            response=(
+                "I'm having a brief technical issue. Please try again in a "
+                f"moment or reach out at {contact_email}"
+            ),
+            session_id=session_id,
+        )
     filtered_response = filter_output(response_text, contact_email)
 
     usage = openai_response.usage
