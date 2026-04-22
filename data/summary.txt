@@ -1,0 +1,5 @@
+I'm a Full-Stack AI Engineer with 5+ years of production experience across the MERN stack and 15 months of deep hands-on work building AI systems at scale. I specialize in shipping retrieval-augmented generation (RAG) pipelines, agentic AI workflows, and LLM integrations that solve real business problems. My foundation spans React, Next.js, Node.js, Express, MongoDB, PostgreSQL, TypeScript, and Docker—giving me the full-stack depth to move seamlessly from frontend to backend to AI infrastructure.
+
+What sets my work apart is an obsession with production-grade engineering. I don't just prototype; I build systems that run reliably in the wild. My RAG implementations use hybrid retrieval strategies, confidence-scored routing, and graceful fallbacks. My agents come with human-in-the-loop controls, audit trails, and monitoring.
+
+I'm actively seeking remote AI engineering roles with teams building the next generation of intelligent systems. Based in Lahore, Pakistan (UTC+5), I respond within 24 hours and thrive in collaborative, high-ownership environments. If you're building RAG systems, agentic workflows, or integrating LLMs into existing applications, let's talk.

@@ -1,0 +1,27 @@
+{
+  "full_name": "Hasnain Asif",
+  "name": "Hasnain Asif",
+  "current_role": "Senior Software Engineer",
+  "location": "Lahore, Pakistan",
+  "email": "hasnainasif52@gmail.com",
+  "linkedin": "linkedin.com/in/hasnain-asif",
+  "github": "github.com/HasnainAsif",
+  "calendaly": "https://calendly.com/hasnainasif52/ai-discussion",
+  "specialties": [
+    "AI Agents",
+    "RAG",
+    "LLMs",
+    "Python",
+    "LangChain",
+    "OpenAI",
+    "ReactJs",
+    "NodeJs"
+  ],
+  "years_experience": 5,
+  "ai_ml_experience_months": 15,
+  "timezone": "UTC+5",
+  "response_time": "within 24 hours",
+  "open_to": ["remote full-time & part-time AI engineering roles"],
+  "current_company": "Tkxel",
+  "notice_period": "2 months (can be reduced upon request)"
+}
