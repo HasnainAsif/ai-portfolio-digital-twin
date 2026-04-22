@@ -60,7 +60,7 @@ htmlcov/
 *.sqlite3
 .cache/
 memory/
-data/
+# data/
 
 # OS
 .DS_Store

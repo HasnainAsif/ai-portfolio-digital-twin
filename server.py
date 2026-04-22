@@ -292,25 +292,37 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     if not openai_response:
         print("Failed to get response from OpenAI after retries. Informing user to try again later.")
-        return ChatResponse(
-            response=(
-                "I'm having a brief technical issue. Please try again in a "
-                f"moment or reach out at {contact_email}"
-            ),
-            session_id=session_id,
+        failure_response = (
+            "I'm having a brief technical issue. Please try again in a "
+            f"moment or reach out at {contact_email}"
         )
+        return ChatResponse(response=failure_response, session_id=session_id)
 
     # Step 6: OUTPUT FILTER
     response_text = openai_response.choices[0].message.content
     if not response_text:
         print(f"[warning] Empty response from OpenAI — finish_reason={openai_response.choices[0].finish_reason} usage={openai_response.usage}")
-        return ChatResponse(
-            response=(
-                "I'm having a brief technical issue. Please try again in a "
-                f"moment or reach out at {contact_email}"
-            ),
-            session_id=session_id,
+        failure_response = (
+            "I'm having a brief technical issue. Please try again in a "
+            f"moment or reach out at {contact_email}"
         )
+        _usage = openai_response.usage
+        _cached = getattr(getattr(_usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
+        asyncio.create_task(
+            log_conversation(
+                session_id,
+                client_ip,
+                intent,
+                chat_request.message,
+                failure_response,
+                model=openai_model or os.getenv("OPENAI_MODEL", "unknown"),
+                input_tokens=_usage.prompt_tokens,
+                output_tokens=_usage.completion_tokens,
+                total_tokens=_usage.total_tokens,
+                cached_input_tokens=_cached,
+            )
+        )
+        return ChatResponse(response=failure_response, session_id=session_id)
     filtered_response = filter_output(response_text, contact_email)
 
     usage = openai_response.usage
