@@ -111,7 +111,7 @@ def filter_output(response: str, context_email: str) -> str:
         The filtered response if clean, or a safe fallback if sensitive info detected
     """
     safe_fallback = (
-        "I'm here to answer questions about Hasnain's professional experience and services. "
+        "I'm here to answer questions about Hasnain's professional experience and projects. " # services
         "Could you ask me something about his background, projects, or how he can help you?"
     )
 

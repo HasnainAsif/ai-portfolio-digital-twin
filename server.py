@@ -247,6 +247,7 @@ async def chat(request: Request, chat_request: ChatRequest):
     retry_count = 0
     max_retries = 1
 
+    # create separate function for OpenAI response
     while retry_count <= max_retries:
         try:
             openai_response = await openai_client.chat.completions.create(
@@ -302,6 +303,7 @@ async def chat(request: Request, chat_request: ChatRequest):
 
     # Step 6: OUTPUT FILTER
     response_text = openai_response.choices[0].message.content
+    print(f"[debug] finish_reason={openai_response.choices[0].finish_reason} content_type={type(response_text)} content_preview={str(response_text)[:100]}")
     filtered_response = filter_output(response_text, contact_email)
 
     usage = openai_response.usage
