@@ -89,6 +89,12 @@ async def log_conversation(
             "session_id": session_id,
             "visitor_ip": visitor_ip,
             "intent": intent,
+            "response_time_ms": response_time_ms,
+            "model": model,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": total_tokens,
+            "cached_input_tokens": cached_input_tokens,
             "user_message": user_message,
             "ai_response": ai_response,
         }

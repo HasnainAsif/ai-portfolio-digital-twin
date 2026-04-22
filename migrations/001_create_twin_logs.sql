@@ -6,6 +6,12 @@ CREATE TABLE twin_logs (
   intent TEXT,
   user_message TEXT,
   ai_response TEXT,
+  model TEXT,
+  input_tokens INTEGER DEFAULT 0,
+  output_tokens INTEGER DEFAULT 0,
+  total_tokens INTEGER DEFAULT 0,
+  cached_input_tokens INTEGER DEFAULT 0,
+  response_time_ms INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
