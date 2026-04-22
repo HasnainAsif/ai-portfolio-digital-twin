@@ -247,7 +247,7 @@ async def chat(request: Request, chat_request: ChatRequest):
                 model=openai_model,
                 messages=messages,
                 max_tokens=600,
-                temperature=0.6,
+                # temperature=0.6,
             )
             break
         except RateLimitError:
@@ -294,6 +294,9 @@ async def chat(request: Request, chat_request: ChatRequest):
     # Step 6: OUTPUT FILTER
     response_text = openai_response.choices[0].message.content
     filtered_response = filter_output(response_text, contact_email)
+
+    usage = openai_response.usage
+    print(f"[model]: {openai_model}; [tokens] session={session_id} input={usage.prompt_tokens} output={usage.completion_tokens} total={usage.total_tokens}")
 
     # Step 7: SAVE AND RESPOND
     conversation.append({"role": "user", "content": chat_request.message})
