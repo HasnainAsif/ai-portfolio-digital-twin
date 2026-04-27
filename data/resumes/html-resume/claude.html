@@ -256,6 +256,15 @@
         margin-bottom: 7px;
       }
 
+      .exp-subtitle,
+      .project-desc {
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        font-style: italic;
+        margin-bottom: 8px;
+        line-height: 1.6;
+      }
+
       .exp-bullets {
         list-style: none;
         display: flex;
@@ -317,12 +326,12 @@
         text-align: right;
         line-height: 1.5;
       }
-
+      /* 
       .project-desc {
         font-size: 12.5px;
         color: var(--ink-mid);
         line-height: 1.6;
-      }
+      } */
 
       .project-bullets {
         list-style: none;
@@ -668,6 +677,11 @@
             <div class="exp-company">
               Self-Employed · Independent AI Engineer
             </div>
+            <div class="exp-subtitle">
+              Designing and developing production agentic AI systems —
+              multi-agent pipelines, RAG architectures, and LLM integrations
+              deployed on AWS.
+            </div>
             <ul class="exp-bullets">
               <li>
                 Built an agentic RAG pipeline with a retrieval evaluator agent
@@ -694,6 +708,10 @@
               <div class="exp-date">Oct 2023 – Present</div>
             </div>
             <div class="exp-company">tkxel · Lahore, Pakistan</div>
+            <div class="exp-subtitle">
+              Worked on enterprise-scale systems for US-based clients, including
+              workforce platforms and multi-tenant SaaS products.
+            </div>
             <ul class="exp-bullets">
               <li>
                 Built core scheduling, shift assignment, and timezone systems
@@ -730,6 +748,10 @@
               <div class="exp-date">May 2022 – Oct 2023</div>
             </div>
             <div class="exp-company">Tkxel · Lahore, Pakistan</div>
+            <div class="exp-subtitle">
+              Built full-stack features for enterprise tools and internal
+              platforms.
+            </div>
             <ul class="exp-bullets">
               <li>
                 Built and shipped enterprise helpdesk features for Tikit, an MS
@@ -750,6 +772,11 @@
               <div class="exp-date">Oct 2021 – Jan 2022</div>
             </div>
             <div class="exp-company">Invozone · Lahore, Pakistan</div>
+            <div class="exp-subtitle">
+              Built and shipped a production multi-chain decentralized exchange
+              enabling token swaps across Ethereum, Binance Smart Chain,
+              Polygon, and Avalanche using Web3 infrastructure.
+            </div>
             <ul class="exp-bullets">
               <li>
                 Led frontend delivery on a production multi-chain DEX enabling
@@ -769,6 +796,10 @@
               <div class="exp-date">Aug 2020 – Oct 2021</div>
             </div>
             <div class="exp-company">OptimusFox · Lahore, Pakistan</div>
+            <div class="exp-subtitle">
+              Built full-stack blockchain-based platforms across fintech and
+              civic tech — led delivery on multiple products.
+            </div>
             <ul class="exp-bullets">
               <li>
                 Served as tech lead on a token offering (ITO) platform —
@@ -806,7 +837,8 @@
               A multi-agent RAG system that eliminates manual document review —
               three specialised agents gate relevance, generate grounded
               answers, and verify factual support before any response reaches
-              the user.
+              the user. Targets the 1.8 hours/day that knowledge workers lose to
+              unverified information retrieval.
             </div>
             <ul class="project-bullets">
               <li>
@@ -840,7 +872,9 @@
               A two-model agentic system that executes multi-step tasks across
               browser, code, files, and search without human supervision — a
               structurally independent evaluator verifies success criteria are
-              met before any result is returned.
+              met before any result is returned. Addresses the 62% of workday
+              spent on tasks that could run unattended and the 9.5 minutes of
+              focus lost each time a worker checks in on a running task.
             </div>
             <ul class="project-bullets">
               <li>
@@ -858,6 +892,48 @@
                 Built a human-in-the-loop escalation mechanism — when the agent
                 repeats the same mistake after feedback, it surfaces the blocker
                 to the user instead of looping silently.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- FULL-STACK PROJECTS -->
+        <div class="section">
+          <div class="section-title">Full-Stack Projects</div>
+
+          <div class="project-item">
+            <div class="project-header">
+              <div class="project-name">Enterprise Workforce Platform</div>
+              <div class="project-stack">
+                React · Node.js · MongoDB · Ruby on Rails · PostgreSQL · Azure
+              </div>
+            </div>
+            <div class="project-desc">
+              Franchise-based security workforce management platform serving
+              11,000+ users across 170+ franchises in the US, Canada, UK, and
+              Australia. Consolidated 5+ disconnected operational systems —
+              scheduling, payroll, contracts, attendance, and invoicing — into a
+              single unified platform.
+            </div>
+            <ul class="project-bullets">
+              <li>
+                Engineered the scheduling and shift assignment system —
+                supervisors split contract hours, manage shift states, and
+                assign officers within contract bounds; invalid assignments were
+                blocked at the UI level to prevent payroll and billing errors on
+                live contracts.
+              </li>
+              <li>
+                Designed and implemented a location-based DST-aware timezone
+                engine adopted across 50+ components — shift times stay fixed to
+                franchise location regardless of browser timezone, eliminating
+                production-level scheduling errors.
+              </li>
+              <li>
+                Engineered location-anchored DST engine handling inverted
+                US/Australia DST cycles in a single unified layer — adopted
+                across 50+ components, eliminated production shift errors for
+                11,000+ users.
               </li>
             </ul>
           </div>
