@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasnain Asif — Resume</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --blue-deep: #0f4c81;
+        --blue-mid: #1a6db5;
+        --blue-light: #d6e8f8;
+        --blue-pale: #f0f7ff;
+        --ink: #111827;
+        --ink-mid: #374151;
+        --ink-soft: #6b7280;
+        --ink-ghost: #9ca3af;
+        --rule: #e2eaf4;
+        --white: #ffffff;
+        --page-bg: #f8fafd;
+      }
+
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--page-bg);
+        color: var(--ink);
+        font-size: 14px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .page {
+        max-width: 820px;
+        margin: 40px auto;
+        background: var(--white);
+        box-shadow:
+          0 4px 32px rgba(15, 76, 129, 0.1),
+          0 1px 4px rgba(0, 0, 0, 0.06);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      /* ── HEADER ── */
+      .header {
+        background: linear-gradient(
+          135deg,
+          #0c3d6e 0%,
+          #1a6db5 60%,
+          #2989d8 100%
+        );
+        padding: 36px 44px 28px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 30%;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .header-name {
+        font-size: 32px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
+        margin-bottom: 4px;
+      }
+
+      .header-title {
+        font-size: 13.5px;
+        color: rgba(255, 255, 255, 0.78);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        margin-bottom: 20px;
+      }
+
+      .contacts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .contact-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.13);
+        border: 0.5px solid rgba(255, 255, 255, 0.22);
+        border-radius: 99px;
+        padding: 4px 11px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.92);
+        font-family: 'DM Mono', monospace;
+        text-decoration: none;
+        transition: background 0.15s;
+      }
+
+      .contact-pill:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
+      .contact-pill svg {
+        width: 12px;
+        height: 12px;
+        fill: rgba(255, 255, 255, 0.7);
+        flex-shrink: 0;
+      }
+
+      /* ── BODY ── */
+      .body {
+        padding: 32px 44px 44px;
+      }
+
+      /* ── SECTION ── */
+      .section {
+        margin-bottom: 28px;
+      }
+
+      .section-title {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--blue-mid);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+      }
+
+      /* ── SUMMARY ── */
+      .summary-text {
+        font-size: 13.5px;
+        color: var(--ink-mid);
+        line-height: 1.75;
+        border-left: 2.5px solid var(--blue-light);
+        padding-left: 14px;
+        background: var(--blue-pale);
+        border-radius: 0 6px 6px 0;
+        padding: 12px 14px;
+      }
+
+      /* ── SKILLS ── */
+      .skills-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .skill-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .skill-category {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--ink);
+        min-width: 110px;
+        padding-top: 2px;
+      }
+
+      .skill-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .skill-tag {
+        font-size: 11.5px;
+        padding: 2px 9px;
+        background: var(--blue-pale);
+        color: var(--blue-deep);
+        border: 0.5px solid var(--blue-light);
+        border-radius: 4px;
+        font-weight: 400;
+      }
+
+      /* ── EXPERIENCE ── */
+      .exp-item {
+        position: relative;
+        padding-left: 18px;
+        margin-bottom: 20px;
+      }
+
+      .exp-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--blue-mid);
+        border: 1.5px solid var(--white);
+        box-shadow: 0 0 0 1.5px var(--blue-mid);
+      }
+
+      .exp-item + .exp-item::after {
+        content: '';
+        position: absolute;
+        left: 3px;
+        bottom: calc(100% + 4px);
+        width: 1px;
+        height: 16px;
+        background: var(--rule);
+      }
+
+      .exp-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1px;
+        gap: 12px;
+      }
+
+      .exp-role {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .exp-date {
+        font-size: 11.5px;
+        color: var(--ink-ghost);
+        font-family: 'DM Mono', monospace;
+        white-space: nowrap;
+        padding-top: 2px;
+      }
+
+      .exp-company {
+        font-size: 12.5px;
+        color: var(--blue-mid);
+        font-weight: 500;
+        margin-bottom: 7px;
+      }
+
+      .exp-bullets {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .exp-bullets li {
+        font-size: 12.5px;
+        color: var(--ink-mid);
+        line-height: 1.6;
+        display: flex;
+        gap: 7px;
+      }
+
+      .exp-bullets li::before {
+        content: '—';
+        color: var(--blue-light);
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ── PROJECTS ── */
+      .project-item {
+        margin-bottom: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--rule);
+        border-radius: 8px;
+        background: #fff;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+
+      .project-item:hover {
+        border-color: var(--blue-light);
+        box-shadow: 0 2px 12px rgba(15, 76, 129, 0.07);
+      }
+
+      .project-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 4px;
+      }
+
+      .project-name {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .project-stack {
+        font-size: 10.5px;
+        color: var(--ink-ghost);
+        font-family: 'DM Mono', monospace;
+        text-align: right;
+        line-height: 1.5;
+      }
+
+      .project-desc {
+        font-size: 12.5px;
+        color: var(--ink-mid);
+        line-height: 1.6;
+      }
+
+      .project-bullets {
+        list-style: none;
+        margin-top: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .project-bullets li {
+        font-size: 12px;
+        color: var(--ink-mid);
+        display: flex;
+        gap: 7px;
+      }
+
+      .project-bullets li::before {
+        content: '·';
+        color: var(--blue-mid);
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+        line-height: 1.4;
+      }
+
+      /* ── TWO-COL ── */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 32px;
+      }
+
+      /* ── EDUCATION ── */
+      .edu-item {
+        margin-bottom: 10px;
+      }
+
+      .edu-degree {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .edu-school {
+        font-size: 12.5px;
+        color: var(--blue-mid);
+        font-weight: 500;
+      }
+
+      .edu-location {
+        font-size: 11.5px;
+        color: var(--ink-ghost);
+        font-family: 'DM Mono', monospace;
+      }
+
+      /* ── CERTS ── */
+      .cert-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+
+      .cert-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--blue-mid);
+        flex-shrink: 0;
+        margin-top: 5px;
+      }
+
+      .cert-name {
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.4;
+      }
+
+      .cert-issuer {
+        font-size: 11.5px;
+        color: var(--ink-ghost);
+      }
+
+      /* ── ACHIEVEMENTS ── */
+      .achievement-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .achievement-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: var(--blue-pale);
+        border: 0.5px solid var(--blue-light);
+        border-radius: 7px;
+        padding: 10px 14px;
+      }
+
+      .achievement-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+        line-height: 1.4;
+      }
+
+      .achievement-text {
+        font-size: 12.5px;
+        color: var(--ink-mid);
+        line-height: 1.6;
+      }
+
+      .achievement-text strong {
+        color: var(--blue-deep);
+        font-weight: 600;
+      }
+
+      /* ── PRINT ── */
+      @media print {
+        body {
+          background: #fff;
+        }
+        .page {
+          margin: 0;
+          box-shadow: none;
+          border-radius: 0;
+        }
+        .project-item:hover {
+          box-shadow: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .header {
+          padding: 24px 20px 20px;
+        }
+        .body {
+          padding: 24px 20px 32px;
+        }
+        .header-name {
+          font-size: 24px;
+        }
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+        .exp-header {
+          flex-direction: column;
+          gap: 2px;
+        }
+        .project-header {
+          flex-direction: column;
+          gap: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="header-name">Hasnain Asif</div>
+        <div class="header-title">
+          AI Engineer &nbsp;·&nbsp; Agentic AI &amp; LLM Systems &nbsp;·&nbsp;
+          Full-Stack Engineer
+        </div>
+        <div class="contacts">
+          <a class="contact-pill" href="mailto:hasnainsaf52@gmail.com">
+            <svg viewBox="0 0 20 20">
+              <path
+                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+              />
+              <path
+                d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+              />
+            </svg>
+            hasnainsaf52@gmail.com
+          </a>
+          <a class="contact-pill" href="tel:+923013716896">
+            <svg viewBox="0 0 20 20">
+              <path
+                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
+              />
+            </svg>
+            +92 301 371 6896
+          </a>
+          <a
+            class="contact-pill"
+            href="https://linkedin.com/in/hasnain-asif"
+            target="_blank"
+          >
+            <svg viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014V7.99h2.558v1.17h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.473zM5.005 6.818a1.493 1.493 0 110-2.986 1.493 1.493 0 010 2.986zm1.337 9.52H3.667V7.99h2.675v8.348zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            linkedin.com/in/hasnain-asif
+          </a>
+          <a
+            class="contact-pill"
+            href="https://hasnainasif.vercel.app"
+            target="_blank"
+          >
+            <svg viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            hasnainasif.vercel.app
+          </a>
+          <span class="contact-pill">
+            <svg viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Bahawalpur, Pakistan
+          </span>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="body">
+        <!-- SUMMARY -->
+        <div class="section">
+          <div class="section-title">Professional Summary</div>
+          <div class="summary-text">
+            AI Engineer with 5+ years of full-stack development experience,
+            specialised in agentic AI systems, RAG pipelines, and LLM
+            integrations deployed on AWS. Built multi-agent LangGraph pipelines,
+            autonomous task execution systems, and enterprise-scale web
+            platforms serving 11,000+ users across 4 countries.
+          </div>
+        </div>
+
+        <!-- SKILLS -->
+        <div class="section">
+          <div class="section-title">Technical Skills</div>
+          <div class="skills-grid">
+            <div class="skill-row">
+              <div class="skill-category">AI &amp; LLM</div>
+              <div class="skill-tags">
+                <span class="skill-tag">Python</span>
+                <span class="skill-tag">LangChain</span>
+                <span class="skill-tag">LangGraph</span>
+                <span class="skill-tag">LlamaIndex</span>
+                <span class="skill-tag">CrewAI</span>
+                <span class="skill-tag">OpenAI Agents SDK</span>
+                <span class="skill-tag">Vector Databases</span>
+                <span class="skill-tag">Large Language Models (LLMs)</span>
+                <span class="skill-tag"
+                  >Retrieval-Augmented Generation (RAG)</span
+                >
+                <span class="skill-tag">Transformer</span>
+                <span class="skill-tag">Machine Learning</span>
+                <!-- <span class="skill-tag">ML</span> -->
+                <span class="skill-tag">NLP</span>
+                <span class="skill-tag">Prompt Engineering</span>
+                <span class="skill-tag">Embeddings</span>
+                <span class="skill-tag">Multi-Agent Systems</span>
+                <span class="skill-tag">FastAPI</span>
+              </div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-category">Cloud &amp; DevOps</div>
+              <div class="skill-tags">
+                <span class="skill-tag">AWS Lambda</span>
+                <span class="skill-tag">SQS</span>
+                <span class="skill-tag">EventBridge</span>
+                <span class="skill-tag">API Gateway</span>
+                <span class="skill-tag">Bedrock</span>
+                <span class="skill-tag">SageMaker</span>
+                <span class="skill-tag">S3 / ECR</span>
+                <span class="skill-tag">Terraform</span>
+                <span class="skill-tag">GitHub Actions</span>
+                <span class="skill-tag">Docker</span>
+                <span class="skill-tag">CI/CD</span>
+              </div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-category">Full-Stack</div>
+              <div class="skill-tags">
+                <span class="skill-tag">React</span>
+                <span class="skill-tag">Next.js</span>
+                <span class="skill-tag">Node.js</span>
+                <span class="skill-tag">TypeScript</span>
+                <span class="skill-tag">Express.js</span>
+                <span class="skill-tag">Web3.js</span>
+                <span class="skill-tag">Redux</span>
+                <span class="skill-tag">GraphQL</span>
+                <span class="skill-tag">WebSockets</span>
+                <span class="skill-tag">Microservices</span>
+                <span class="skill-tag">REST API</span>
+              </div>
+            </div>
+            <div class="skill-row">
+              <div class="skill-category">Databases</div>
+              <div class="skill-tags">
+                <span class="skill-tag">PostgreSQL</span>
+                <span class="skill-tag">MongoDB</span>
+                <span class="skill-tag">ChromaDB</span>
+                <span class="skill-tag">FAISS</span>
+                <span class="skill-tag">Pinecone</span>
+                <span class="skill-tag">Redis</span>
+                <span class="skill-tag">Semantic Search</span>
+                <span class="skill-tag">BM25</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPERIENCE -->
+        <div class="section">
+          <div class="section-title">Experience</div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">
+                AI Engineer — Agentic AI &amp; Production Systems
+              </div>
+              <div class="exp-date">Oct 2025 – Present</div>
+            </div>
+            <div class="exp-company">
+              Self-Employed · Independent AI Engineer
+            </div>
+            <ul class="exp-bullets">
+              <li>
+                Built an agentic RAG pipeline with a retrieval evaluator agent
+                that filters documents by relevance before generation —
+                improving answer quality in document-heavy use cases.
+              </li>
+              <li>
+                Deployed a distributed multi-agent system on AWS: five Lambda
+                functions (one per agent), S3-backed vector storage, SageMaker
+                embeddings, API Gateway orchestration, and CloudFront + S3 for a
+                Next.js frontend.
+              </li>
+              <li>
+                Implemented IaC pipelines using Terraform and GitHub Actions for
+                automated deployment across AWS Bedrock, Lambda, ECR, S3, and
+                CloudFront.
+              </li>
+            </ul>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">Senior Software Engineer</div>
+              <div class="exp-date">Oct 2023 – Present</div>
+            </div>
+            <div class="exp-company">tkxel · Lahore, Pakistan</div>
+            <ul class="exp-bullets">
+              <li>
+                Built core scheduling, shift assignment, and timezone systems
+                for an enterprise workforce platform serving 11,000+ users
+                across 170+ franchises in 4 countries — invalid assignments
+                blocked at UI level to prevent payroll errors.
+              </li>
+              <li>
+                Engineered a location-anchored DST timezone engine adopted
+                across 50+ components — eliminated production-level shift
+                scheduling errors across the US, Canada, UK, and Australia.
+              </li>
+              <li>
+                Led a 5-engineer team to revive a 2-year abandoned multi-tenant
+                social platform with no documentation — owned task breakdown, PR
+                reviews, and all technical decisions.
+              </li>
+              <li>
+                Reverse-engineered OpenFGA authorization schema from legacy
+                deployments — restored full role-based permission hierarchy
+                across all admin levels.
+              </li>
+              <li>
+                Built and shipped multi-currency Stripe subscriptions (PKR, USD,
+                GBP) on a platform designed for 1M+ audience members across
+                1,000–5,000 brand Hubs.
+              </li>
+            </ul>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">Software Engineer</div>
+              <div class="exp-date">May 2022 – Oct 2023</div>
+            </div>
+            <div class="exp-company">Tkxel · Lahore, Pakistan</div>
+            <ul class="exp-bullets">
+              <li>
+                Built and shipped enterprise helpdesk features for Tikit, an MS
+                Teams-integrated ticketing platform for high-volume IT, HR, and
+                Finance workflows.
+              </li>
+              <li>
+                Built a Custom Views system for an MS Teams-integrated
+                enterprise helpdesk — enabled persistent multi-filter
+                configurations across thousands of concurrent tickets.
+              </li>
+            </ul>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">Software Engineer</div>
+              <div class="exp-date">Oct 2021 – Jan 2022</div>
+            </div>
+            <div class="exp-company">Invozone · Lahore, Pakistan</div>
+            <ul class="exp-bullets">
+              <li>
+                Led frontend delivery on a production multi-chain DEX enabling
+                token swaps across Ethereum, BSC, Polygon, and Avalanche — owned
+                architecture decisions and directed the team end-to-end.
+              </li>
+              <li>
+                Integrated MetaMask and Coinbase wallet connections with live
+                on-chain function calls via Web3.js.
+              </li>
+            </ul>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">Software Engineer</div>
+              <div class="exp-date">Aug 2020 – Oct 2021</div>
+            </div>
+            <div class="exp-company">OptimusFox · Lahore, Pakistan</div>
+            <ul class="exp-bullets">
+              <li>
+                Served as tech lead on a token offering (ITO) platform —
+                designed ERD, owned full-stack architecture, and routed tasks
+                across a 4-engineer team.
+              </li>
+              <li>
+                Built a blockchain-based tamper-resistant e-voting system with
+                three role-based panels — admin, candidate, and voter — with
+                on-chain ballot execution via Web3.js.
+              </li>
+              <li>
+                Owned full-stack delivery across all projects — React + Redux
+                frontends, Node.js/Express backends, PostgreSQL and MongoDB
+                databases.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="section">
+          <div class="section-title">AI Projects</div>
+
+          <div class="project-item">
+            <div class="project-header">
+              <div class="project-name">
+                DocInsight — Verified Document Q&amp;A
+              </div>
+              <div class="project-stack">
+                LangGraph · LangChain · ChromaDB · OpenAI · FastAPI
+              </div>
+            </div>
+            <div class="project-desc">
+              A multi-agent RAG system that eliminates manual document review —
+              three specialised agents gate relevance, generate grounded
+              answers, and verify factual support before any response reaches
+              the user.
+            </div>
+            <ul class="project-bullets">
+              <li>
+                Built a 3-agent LangGraph pipeline — Relevance Checker, Research
+                Agent, and Verification Agent — answers verified against source
+                passages before being returned to the user.
+              </li>
+              <li>
+                Implemented hybrid retrieval combining BM25 (40%) and ChromaDB
+                vector search (60%) — improves recall on exact-match queries
+                that pure semantic search consistently misses.
+              </li>
+              <li>
+                Designed conditional routing so failed verification triggers
+                automatic re-research — unverified answers never surface to the
+                user.
+              </li>
+            </ul>
+          </div>
+
+          <div class="project-item">
+            <div class="project-header">
+              <div class="project-name">
+                Sidekick — Autonomous AI Work Agent
+              </div>
+              <div class="project-stack">
+                LangGraph · OpenAI · Playwright · Serper API · Python REPL
+              </div>
+            </div>
+            <div class="project-desc">
+              A two-model agentic system that executes multi-step tasks across
+              browser, code, files, and search without human supervision — a
+              structurally independent evaluator verifies success criteria are
+              met before any result is returned.
+            </div>
+            <ul class="project-bullets">
+              <li>
+                Built a two-model LangGraph pipeline — worker executes across
+                browser automation, Python REPL, file I/O, and web search, while
+                a separate evaluator independently verifies task completion,
+                eliminating self-evaluation bias.
+              </li>
+              <li>
+                Implemented typed feedback loop — structured feedback is
+                injected into the worker system prompt on retry, so the agent
+                knows exactly why it failed before reattempting.
+              </li>
+              <li>
+                Built a human-in-the-loop escalation mechanism — when the agent
+                repeats the same mistake after feedback, it surfaces the blocker
+                to the user instead of looping silently.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- EDUCATION + CERTS -->
+        <div class="two-col">
+          <div class="section">
+            <div class="section-title">Education</div>
+            <div class="edu-item">
+              <div class="edu-degree">BS Software Engineering</div>
+              <div class="edu-school">
+                University of Engineering &amp; Technology, Taxila
+              </div>
+              <div class="edu-location">Rawalpindi, Pakistan</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Certifications</div>
+            <div class="cert-item">
+              <div class="cert-dot"></div>
+              <div>
+                <div class="cert-name">
+                  IBM RAG and Agentic AI Specialization
+                </div>
+                <div class="cert-issuer">Coursera · IBM</div>
+              </div>
+            </div>
+            <div class="cert-item">
+              <div class="cert-dot"></div>
+              <div>
+                <div class="cert-name">
+                  AI Engineer Production Track: Deploy LLMs &amp; Agents at
+                  Scale
+                </div>
+                <div class="cert-issuer">Udemy · Ed Donner</div>
+              </div>
+            </div>
+            <div class="cert-item">
+              <div class="cert-dot"></div>
+              <div>
+                <div class="cert-name">
+                  Agentic Track: The Complete Agent &amp; MCP Course
+                </div>
+                <div class="cert-issuer">Udemy · Ed Donner</div>
+              </div>
+            </div>
+            <div class="cert-item">
+              <div class="cert-dot"></div>
+              <div>
+                <div class="cert-name">
+                  Serverless Framework Bootcamp: Node.js, AWS &amp;
+                  Microservices
+                </div>
+                <div class="cert-issuer">Udemy · Ariel Weinberger</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KEY ACHIEVEMENTS -->
+        <div class="section">
+          <div class="section-title">Key Achievements</div>
+          <div class="achievement-list">
+            <div class="achievement-item">
+              <div class="achievement-icon">🌍</div>
+              <div class="achievement-text">
+                <strong>11,000+ Users, 4 Countries:</strong> Delivered and
+                maintained an enterprise workforce platform across 170+
+                franchises in the US, Canada, UK, and Australia without
+                production downtime.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">⏱</div>
+              <div class="achievement-text">
+                <strong>Zero Scheduling Errors:</strong> Designed a
+                location-anchored DST timezone engine adopted across 50+
+                components — eliminated all production-level shift scheduling
+                errors for a globally distributed user base.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">🔄</div>
+              <div class="achievement-text">
+                <strong>Revived a Dead Platform:</strong> Led a 5-engineer team
+                to fully restore a 2-year abandoned multi-tenant social platform
+                with no documentation, no infrastructure visibility, and no
+                handoff — shipping live in 4 months.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">🤖</div>
+              <div class="achievement-text">
+                <strong>Production Agentic AI:</strong> Built and deployed a
+                distributed multi-agent system on AWS — five independent Lambda
+                agents with S3-backed vector storage, SageMaker embeddings, and
+                full IaC via Terraform.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">💳</div>
+              <div class="achievement-text">
+                <strong>Multi-Currency Payments at Scale:</strong> Shipped
+                Stripe subscription billing in PKR, USD, and GBP on a platform
+                designed for 1M+ audience members across 1,000–5,000 brand Hubs.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
