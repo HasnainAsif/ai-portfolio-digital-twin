@@ -60,43 +60,17 @@
 
       /* ── HEADER ── */
       .header {
-        background: linear-gradient(
-          135deg,
-          #0c3d6e 0%,
-          #1a6db5 60%,
-          #2989d8 100%
-        );
+        background: #ffffff;
+        border-bottom: 3px solid #1a6db5;
         padding: 36px 44px 28px;
         position: relative;
         overflow: hidden;
       }
 
-      .header::before {
-        content: '';
-        position: absolute;
-        top: -40px;
-        right: -40px;
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .header::after {
-        content: '';
-        position: absolute;
-        bottom: -20px;
-        left: 30%;
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.04);
-      }
-
       .header-name {
         font-size: 32px;
         font-weight: 600;
-        color: #fff;
+        color: #0f4c81;
         letter-spacing: -0.5px;
         line-height: 1.1;
         margin-bottom: 4px;
@@ -104,7 +78,7 @@
 
       .header-title {
         font-size: 13.5px;
-        color: rgba(255, 255, 255, 0.78);
+        color: #374151;
         font-weight: 400;
         letter-spacing: 0.02em;
         margin-bottom: 20px;
@@ -120,12 +94,15 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        background: rgba(255, 255, 255, 0.13);
+        /* background: rgba(255, 255, 255, 0.13);
         border: 0.5px solid rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.92); */
+        background: #f0f7ff;
+        border: 0.5px solid #d6e8f8;
+        color: #0f4c81;
         border-radius: 99px;
         padding: 4px 11px;
         font-size: 12px;
-        color: rgba(255, 255, 255, 0.92);
         font-family: 'DM Mono', monospace;
         text-decoration: none;
         transition: background 0.15s;
@@ -138,7 +115,7 @@
       .contact-pill svg {
         width: 12px;
         height: 12px;
-        fill: rgba(255, 255, 255, 0.7);
+        fill: #1a6db5;
         flex-shrink: 0;
       }
 
@@ -923,57 +900,6 @@
                   Microservices
                 </div>
                 <div class="cert-issuer">Udemy · Ariel Weinberger</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- KEY ACHIEVEMENTS -->
-        <div class="section">
-          <div class="section-title">Key Achievements</div>
-          <div class="achievement-list">
-            <div class="achievement-item">
-              <div class="achievement-icon">🌍</div>
-              <div class="achievement-text">
-                <strong>11,000+ Users, 4 Countries:</strong> Delivered and
-                maintained an enterprise workforce platform across 170+
-                franchises in the US, Canada, UK, and Australia without
-                production downtime.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">⏱</div>
-              <div class="achievement-text">
-                <strong>Zero Scheduling Errors:</strong> Designed a
-                location-anchored DST timezone engine adopted across 50+
-                components — eliminated all production-level shift scheduling
-                errors for a globally distributed user base.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">🔄</div>
-              <div class="achievement-text">
-                <strong>Revived a Dead Platform:</strong> Led a 5-engineer team
-                to fully restore a 2-year abandoned multi-tenant social platform
-                with no documentation, no infrastructure visibility, and no
-                handoff — shipping live in 4 months.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">🤖</div>
-              <div class="achievement-text">
-                <strong>Production Agentic AI:</strong> Built and deployed a
-                distributed multi-agent system on AWS — five independent Lambda
-                agents with S3-backed vector storage, SageMaker embeddings, and
-                full IaC via Terraform.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">💳</div>
-              <div class="achievement-text">
-                <strong>Multi-Currency Payments at Scale:</strong> Shipped
-                Stripe subscription billing in PKR, USD, and GBP on a platform
-                designed for 1M+ audience members across 1,000–5,000 brand Hubs.
               </div>
             </div>
           </div>
