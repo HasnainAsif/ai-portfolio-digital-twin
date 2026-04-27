@@ -103,7 +103,6 @@ def is_ip_blocked(ip: str) -> bool:
         return False
     
     if not USE_UPSTASH_REDIS or not redis_client:
-        print(f"IP conversation counts (in-memory): {_ip_conv_store}")
         return _ip_conv_store.get(ip, 0) >= MAX_CONVERSATIONS_PER_IP
 
     try:
