@@ -11,7 +11,11 @@
     <style>
       @page {
         size: A4;
-        margin: 0;
+        margin: 14mm 0;
+      }
+
+      @page :first {
+        margin-top: 0;
       }
 
       *,
@@ -140,6 +144,8 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        break-after: avoid;
+        page-break-after: avoid;
       }
 
       .section-title::after {
@@ -571,7 +577,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            Bahawalpur, Pakistan
+            Lahore, Pakistan
           </span>
         </div>
       </div>
