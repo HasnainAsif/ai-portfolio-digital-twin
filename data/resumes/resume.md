@@ -9,7 +9,7 @@ Pakistan &nbsp;·&nbsp; Open to Remote
 
 ## Professional Summary
 
-Full Stack AI Engineer with 5+ years of full-stack production experience, now specialized in agentic AI systems, RAG pipelines, and LLM-powered backends using LangGraph and LangChain, deployed on AWS. Built multi-agent LangGraph pipelines, autonomous task execution systems, and enterprise-scale web platforms serving 11,000+ users across 4 countries. Equally fluent across AI infrastructure and full-stack engineering, from LLM pipelines to React frontends and distributed backends.
+AI Engineer with 5+ years of full-stack production experience, now specialized in agentic AI systems, RAG pipelines, and LLM-powered backends using LangGraph and LangChain, deployed on AWS. Built multi-agent LangGraph pipelines, autonomous task execution systems, and enterprise-scale web platforms serving 11,000+ users across 4 countries. Equally fluent across AI infrastructure and full-stack engineering, from LLM pipelines to React frontends and distributed backends.
 
 ---
 
