@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hasnain Asif — Resume</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,700&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -65,61 +65,85 @@
       /* ── HEADER ── */
       .header {
         background: #ffffff;
-        /* border-bottom: 3px solid #1a6db5; */
-        padding: 36px 44px 28px;
-        position: relative;
-        overflow: hidden;
+        padding: 32px 44px;
+        display: flex;
+        align-items: center;
+      }
+
+      .header-left {
+        flex: 1;
+        padding-right: 36px;
       }
 
       .header-name {
-        font-size: 32px;
-        font-weight: 600;
+        font-family: 'Playfair Display', serif;
+        font-size: 40px;
+        font-weight: 700;
+        font-style: italic;
         color: #0f4c81;
         letter-spacing: -0.5px;
-        line-height: 1.1;
-        margin-bottom: 4px;
+        line-height: 1.05;
+        margin-bottom: 10px;
+      }
+
+      .header-rule {
+        width: 36px;
+        height: 2px;
+        background: #1a6db5;
+        margin-bottom: 10px;
       }
 
       .header-title {
-        font-size: 13.5px;
-        color: #374151;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        margin-bottom: 20px;
-      }
-
-      .contacts {
+        font-family: 'DM Mono', monospace;
+        font-size: 10.5px;
+        color: #6b7280;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .contact-pill {
-        display: inline-flex;
         align-items: center;
-        gap: 5px;
-        /* background: rgba(255, 255, 255, 0.13);
-        border: 0.5px solid rgba(255, 255, 255, 0.22);
-        color: rgba(255, 255, 255, 0.92); */
-        background: #f0f7ff;
-        border: 0.5px solid #d6e8f8;
-        color: #0f4c81;
-        border-radius: 99px;
-        padding: 4px 11px;
+        gap: 6px;
+      }
+
+      .header-title-sep {
+        color: #d6e8f8;
         font-size: 12px;
+      }
+
+      .header-divider {
+        width: 1px;
+        height: 72px;
+        background: #e2eaf4;
+        flex-shrink: 0;
+      }
+
+      .header-right {
+        padding-left: 36px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .contact-line {
         font-family: 'DM Mono', monospace;
+        font-size: 10.5px;
+        color: #374151;
         text-decoration: none;
-        transition: background 0.15s;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: color 0.15s;
       }
 
-      .contact-pill:hover {
-        background: rgba(255, 255, 255, 0.22);
+      .contact-line:hover {
+        color: #1a6db5;
       }
 
-      .contact-pill svg {
-        width: 12px;
-        height: 12px;
-        fill: #1a6db5;
+      .contact-line svg {
+        width: 10px;
+        height: 10px;
+        fill: #9ca3af;
         flex-shrink: 0;
       }
 
@@ -476,13 +500,26 @@
 
       @media (max-width: 640px) {
         .header {
-          padding: 24px 20px 20px;
+          padding: 24px 20px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 20px;
+        }
+        .header-left {
+          padding-right: 0;
+        }
+        .header-divider {
+          width: 36px;
+          height: 1px;
+        }
+        .header-right {
+          padding-left: 0;
+        }
+        .header-name {
+          font-size: 28px;
         }
         .body {
           padding: 24px 20px 32px;
-        }
-        .header-name {
-          font-size: 24px;
         }
         .two-col {
           grid-template-columns: 1fr;
@@ -502,13 +539,20 @@
     <div class="page">
       <!-- HEADER -->
       <div class="header">
-        <div class="header-name">Hasnain Asif</div>
-        <div class="header-title">
-          AI Engineer &nbsp;·&nbsp; Agentic AI &amp; LLM Systems &nbsp;·&nbsp;
-          Full-Stack Engineer
+        <div class="header-left">
+          <div class="header-name">Hasnain Asif</div>
+          <div class="header-rule"></div>
+          <div class="header-title">
+            <span>AI Engineer</span>
+            <span class="header-title-sep">&middot;</span>
+            <span>Agentic AI &amp; LLM Systems</span>
+            <span class="header-title-sep">&middot;</span>
+            <span>Full-Stack Engineer</span>
+          </div>
         </div>
-        <div class="contacts">
-          <a class="contact-pill" href="mailto:hasnainsaf52@gmail.com">
+        <div class="header-divider"></div>
+        <div class="header-right">
+          <a class="contact-line" href="mailto:hasnainsaf52@gmail.com">
             <svg viewBox="0 0 20 20">
               <path
                 d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
@@ -519,7 +563,7 @@
             </svg>
             hasnainsaf52@gmail.com
           </a>
-          <a class="contact-pill" href="tel:+923013716896">
+          <a class="contact-line" href="tel:+923013716896">
             <svg viewBox="0 0 20 20">
               <path
                 d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
@@ -528,7 +572,7 @@
             +92 301 371 6896
           </a>
           <a
-            class="contact-pill"
+            class="contact-line"
             href="https://linkedin.com/in/hasnain-asif"
             target="_blank"
           >
@@ -542,21 +586,7 @@
             linkedin.com/in/hasnain-asif
           </a>
           <a
-            class="contact-pill"
-            href="https://hasnainasif.vercel.app"
-            target="_blank"
-          >
-            <svg viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            hasnainasif.vercel.app
-          </a>
-          <a
-            class="contact-pill"
+            class="contact-line"
             href="https://github.com/HasnainAsif"
             target="_blank"
           >
@@ -569,7 +599,21 @@
             </svg>
             github.com/HasnainAsif
           </a>
-          <span class="contact-pill">
+          <a
+            class="contact-line"
+            href="https://hasnainasif.vercel.app"
+            target="_blank"
+          >
+            <svg viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            hasnainasif.vercel.app
+          </a>
+          <span class="contact-line">
             <svg viewBox="0 0 20 20">
               <path
                 fill-rule="evenodd"
@@ -580,6 +624,12 @@
             Lahore, Pakistan
           </span>
         </div>
+      </div>
+
+      <!-- Fallback - For ATS Parsing -->
+      <div style="display: none">
+        hasnainsaf52@gmail.com | +92 301 371 6896 | linkedin.com/in/hasnain-asif
+        | github.com/HasnainAsif | hasnainasif.vercel.app | Bahawalpur, Pakistan
       </div>
 
       <!-- ATS-safe divider -->
