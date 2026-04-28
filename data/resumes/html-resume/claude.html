@@ -645,6 +645,8 @@
                 <span class="skill-tag">WebSockets</span>
                 <span class="skill-tag">Microservices</span>
                 <span class="skill-tag">REST API</span>
+                <span class="skill-tag">Agile</span>
+                <span class="skill-tag">Scrum</span>
               </div>
             </div>
             <div class="skill-row">
@@ -714,30 +716,24 @@
             </div>
             <ul class="exp-bullets">
               <li>
-                Built core scheduling, shift assignment, and timezone systems
-                for an enterprise workforce platform serving 11,000+ users
-                across 170+ franchises in 4 countries — invalid assignments
-                blocked at UI level to prevent payroll errors.
-              </li>
-              <li>
-                Engineered a location-anchored DST timezone engine adopted
-                across 50+ components — eliminated production-level shift
-                scheduling errors across the US, Canada, UK, and Australia.
-              </li>
-              <li>
                 Led a 5-engineer team to revive a 2-year abandoned multi-tenant
                 social platform with no documentation — owned task breakdown, PR
                 reviews, and all technical decisions.
               </li>
               <li>
-                Reverse-engineered OpenFGA authorization schema from legacy
-                deployments — restored full role-based permission hierarchy
-                across all admin levels.
+                Built the scheduling, shift assignment, and DST timezone engine
+                for an enterprise workforce platform — adopted across 50+
+                components, serving 11,000+ users across 170+ franchises in 4
+                countries, with invalid assignments blocked at UI level to
+                prevent payroll errors.
               </li>
+
               <li>
-                Built and shipped multi-currency Stripe subscriptions (PKR, USD,
-                GBP) on a platform designed for 1M+ audience members across
-                1,000–5,000 brand Hubs.
+                Reverse-engineered OpenFGA authorization schema from legacy
+                deployments — restored full role-based access control across all
+                admin levels; separately shipped multi-currency Stripe
+                subscriptions (PKR, USD, GBP) on a platform designed for 1M+
+                audience members across 1,000–5,000 brand Hubs.
               </li>
             </ul>
           </div>
@@ -822,7 +818,7 @@
 
         <!-- PROJECTS -->
         <div class="section">
-          <div class="section-title">AI Projects</div>
+          <div class="section-title">Projects</div>
 
           <div class="project-item">
             <div class="project-header">
@@ -895,11 +891,6 @@
               </li>
             </ul>
           </div>
-        </div>
-
-        <!-- FULL-STACK PROJECTS -->
-        <div class="section">
-          <div class="section-title">Full-Stack Projects</div>
 
           <div class="project-item">
             <div class="project-header">
@@ -917,17 +908,57 @@
             </div>
             <ul class="project-bullets">
               <li>
-                Engineered the scheduling and shift assignment system —
-                supervisors split contract hours, manage shift states, and
-                assign officers within contract bounds; invalid assignments were
-                blocked at the UI level to prevent payroll and billing errors on
-                live contracts.
+                Anchored all time logic to franchise location rather than
+                browser or system settings — built a single DST layer handling
+                inverted US/Australia cycles simultaneously, eliminating
+                production shift drift across 50+ components.
               </li>
               <li>
-                Engineered location-anchored DST engine handling inverted
-                US/Australia DST cycles in a single unified layer — adopted
-                across 50+ components, eliminated production shift errors for
-                11,000+ users.
+                Designed frontend architecture with franchise-level data
+                isolation built in — franchise users see only their operations
+                while platform owners access global data across all 170+
+                franchises; isolation was architectural, not bolted on.
+              </li>
+              <li>
+                Enforced contract boundaries at the UI level during shift
+                assignment — supervisors operate within contract hours and shift
+                states with invalid assignments blocked before they reach
+                payroll.
+              </li>
+            </ul>
+          </div>
+
+          <div class="project-item">
+            <div class="project-header">
+              <div class="project-name">Multi-Tenant Social Platform</div>
+              <div class="project-stack">
+                React · Node.js · GraphQL · MongoDB · OpenFGA · Stripe · AWS
+              </div>
+            </div>
+            <div class="project-desc">
+              Led a 5-engineer team for 4 months to revive an abandoned
+              multi-tenant social platform inactive for 2 years — restored a
+              fully non-functional system with no documentation, no
+              infrastructure visibility, and no prior ownership handoff.
+            </div>
+            <ul class="project-bullets">
+              <li>
+                Spent 1 month reverse-engineering OpenFGA tuple relationships
+                from broken production deployments — reconstructed Super Admin,
+                Organization Admin, and sub-admin permission hierarchies
+                entirely without documentation.
+              </li>
+              <li>
+                Recovered broken AWS infrastructure (S3, Lambda, ECS) with no
+                prior ownership context — restored core platform workflows
+                including org/hub/circle creation, content management, and
+                audience engagement.
+              </li>
+              <li>
+                Built Stripe multi-currency subscription flow — admins configure
+                pricing per circle in PKR, USD, and GBP simultaneously; audience
+                members subscribe in preferred currency on a platform with zero
+                prior working monetization.
               </li>
             </ul>
           </div>
@@ -988,6 +1019,57 @@
             </div>
           </div>
         </div>
+
+        <!-- KEY ACHIEVEMENTS -->
+        <!-- <div class="section">
+          <div class="section-title">Key Achievements</div>
+          <div class="achievement-list">
+            <div class="achievement-item">
+              <div class="achievement-icon">🌍</div>
+              <div class="achievement-text">
+                <strong>11,000+ Users, 4 Countries:</strong> Delivered and
+                maintained an enterprise workforce platform across 170+
+                franchises in the US, Canada, UK, and Australia without
+                production downtime.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">⏱</div>
+              <div class="achievement-text">
+                <strong>Zero Scheduling Errors:</strong> Designed a
+                location-anchored DST timezone engine adopted across 50+
+                components — eliminated all production-level shift scheduling
+                errors for a globally distributed user base.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">🔄</div>
+              <div class="achievement-text">
+                <strong>Revived a Dead Platform:</strong> Led a 5-engineer team
+                to fully restore a 2-year abandoned multi-tenant social platform
+                with no documentation, no infrastructure visibility, and no
+                handoff — shipping live in 4 months.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">🤖</div>
+              <div class="achievement-text">
+                <strong>Production Agentic AI:</strong> Built and deployed a
+                distributed multi-agent system on AWS — five independent Lambda
+                agents with S3-backed vector storage, SageMaker embeddings, and
+                full IaC via Terraform.
+              </div>
+            </div>
+            <div class="achievement-item">
+              <div class="achievement-icon">💳</div>
+              <div class="achievement-text">
+                <strong>Multi-Currency Payments at Scale:</strong> Shipped
+                Stripe subscription billing in PKR, USD, and GBP on a platform
+                designed for 1M+ audience members across 1,000–5,000 brand Hubs.
+              </div>
+            </div>
+          </div>
+        </div> -->
       </div>
     </div>
   </body>
