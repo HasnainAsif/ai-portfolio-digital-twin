@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -359,7 +359,7 @@
         text-align: right;
         line-height: 1.5;
       }
-      /* 
+      /*
       .project-desc {
         font-size: 12.5px;
         color: var(--ink-mid);
@@ -536,101 +536,147 @@
     </style>
   </head>
   <body>
-    <div class="page">
+    <div class="page" id="resume-page"></div>
+
+    <script src="resume-data.js"></script>
+    <script>
+      const svgPaths = {
+        email:    `<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>`,
+        phone:    `<path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>`,
+        linkedin: `<path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014V7.99h2.558v1.17h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.473zM5.005 6.818a1.493 1.493 0 110-2.986 1.493 1.493 0 010 2.986zm1.337 9.52H3.667V7.99h2.675v8.348zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"/>`,
+        github:   `<path fill-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.138 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/>`,
+        website:  `<path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>`,
+        location: `<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>`
+      };
+
+      function icon(type) {
+        return `<svg viewBox="0 0 20 20">${svgPaths[type]}</svg>`;
+      }
+
+      function renderContact(items) {
+        return items.map(item => {
+          const svg = icon(item.type);
+          if (item.href) {
+            const target = item.href.startsWith('http') ? ' target="_blank"' : '';
+            return `<a class="contact-line" href="${item.href}"${target}>${svg}${item.label}</a>`;
+          }
+          return `<span class="contact-line">${svg}${item.label}</span>`;
+        }).join('\n          ');
+      }
+
+      function renderHeader(data) {
+        const titles = data.titles.map((t, i) =>
+          i < data.titles.length - 1
+            ? `<span>${t}</span>\n            <span class="header-title-sep">&middot;</span>`
+            : `<span>${t}</span>`
+        ).join('\n            ');
+
+        return `
       <!-- HEADER -->
       <div class="header">
         <div class="header-left">
-          <div class="header-name">Hasnain Asif</div>
+          <div class="header-name">${data.name}</div>
           <div class="header-rule"></div>
           <div class="header-title">
-            <span>AI Engineer</span>
-            <span class="header-title-sep">&middot;</span>
-            <span>Agentic AI &amp; LLM Systems</span>
-            <span class="header-title-sep">&middot;</span>
-            <span>Full-Stack Engineer</span>
+            ${titles}
           </div>
         </div>
         <div class="header-divider"></div>
         <div class="header-right">
-          <a class="contact-line" href="mailto:hasnainsaf52@gmail.com">
-            <svg viewBox="0 0 20 20">
-              <path
-                d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-              />
-              <path
-                d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-              />
-            </svg>
-            hasnainsaf52@gmail.com
-          </a>
-          <a class="contact-line" href="tel:+923013716896">
-            <svg viewBox="0 0 20 20">
-              <path
-                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-              />
-            </svg>
-            +92 301 371 6896
-          </a>
-          <a
-            class="contact-line"
-            href="https://linkedin.com/in/hasnain-asif"
-            target="_blank"
-          >
-            <svg viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014V7.99h2.558v1.17h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.779 3.203 4.092v4.473zM5.005 6.818a1.493 1.493 0 110-2.986 1.493 1.493 0 010 2.986zm1.337 9.52H3.667V7.99h2.675v8.348zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            linkedin.com/in/hasnain-asif
-          </a>
-          <a
-            class="contact-line"
-            href="https://github.com/HasnainAsif"
-            target="_blank"
-          >
-            <svg viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.138 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            github.com/HasnainAsif
-          </a>
-          <a
-            class="contact-line"
-            href="https://hasnainasif.vercel.app"
-            target="_blank"
-          >
-            <svg viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            hasnainasif.vercel.app
-          </a>
-          <span class="contact-line">
-            <svg viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Lahore, Pakistan
-          </span>
+          ${renderContact(data.contact)}
         </div>
-      </div>
+      </div>`;
+      }
+
+      function renderSkills(skills) {
+        return skills.map(row => `
+            <div class="skill-row">
+              <div class="skill-category">${row.category}</div>
+              <div class="skill-tags">
+                ${row.tags.map(t => `<span class="skill-tag">${t}</span>`).join('\n                ')}
+              </div>
+            </div>`).join('');
+      }
+
+      function renderExperience(experience) {
+        return experience.map(exp => `
+          <div class="exp-item">
+            <div class="exp-header">
+              <div class="exp-role">${exp.role}</div>
+              <div class="exp-date">${exp.date}</div>
+            </div>
+            <div class="exp-company">${exp.company}</div>
+            <div class="exp-subtitle">${exp.subtitle}</div>
+            <ul class="exp-bullets">
+              ${exp.bullets.map(b => `<li>${b}</li>`).join('\n              ')}
+            </ul>
+          </div>`).join('\n');
+      }
+
+      function renderProjectItem(p) {
+        return `<div class="project-item">
+            <div class="project-header">
+              <div class="project-name">${p.name}</div>
+              <div class="project-stack">${p.stack}</div>
+            </div>
+            <div class="project-desc">${p.desc}</div>
+            <ul class="project-bullets">
+              ${p.bullets.map(b => `<li>${b}</li>`).join('\n              ')}
+            </ul>
+          </div>`;
+      }
+
+      function renderProjects(projects) {
+        return projects.map(p =>
+          p.active
+            ? `\n          ${renderProjectItem(p)}`
+            : `\n          <!-- ${renderProjectItem(p)} -->`
+        ).join('\n');
+      }
+
+      function renderEducation(education) {
+        return education.map(e => `
+          <div class="edu-item">
+            <div class="edu-degree">${e.degree}</div>
+            <div class="edu-school">${e.school}</div>
+            <div class="edu-location">${e.location}</div>
+          </div>`).join('');
+      }
+
+      function renderCertifications(certs) {
+        return certs.map(c => `
+          <div class="cert-item">
+            <div class="cert-dot"></div>
+            <div>
+              <div class="cert-name">${c.name}</div>
+              <div class="cert-issuer">${c.issuer}</div>
+            </div>
+          </div>`).join('');
+      }
+
+      function renderAchievements(achievements) {
+        const inner = `
+        <div class="section">
+          <div class="section-title">Key Achievements</div>
+          <div class="achievement-list">
+            ${achievements.items.map(a => `<div class="achievement-item">
+              <div class="achievement-icon">${a.icon}</div>
+              <div class="achievement-text"><strong>${a.strong}</strong> ${a.text}</div>
+            </div>`).join('\n            ')}
+          </div>
+        </div>`;
+
+        return achievements.active ? inner : `<!-- ${inner} -->`;
+      }
+
+      function render(data) {
+        const atsText = data.contact.map(c => c.label).join(' | ');
+
+        document.getElementById('resume-page').innerHTML = `
+      ${renderHeader(data)}
 
       <!-- Fallback - For ATS Parsing -->
-      <div style="display: none">
-        hasnainsaf52@gmail.com | +92 301 371 6896 | linkedin.com/in/hasnain-asif
-        | github.com/HasnainAsif | hasnainasif.vercel.app | Bahawalpur, Pakistan
-      </div>
+      <div style="display: none">${atsText}</div>
 
       <!-- ATS-safe divider -->
       <div style="height: 3px; background: #1a6db5"></div>
@@ -640,497 +686,47 @@
         <!-- SUMMARY -->
         <div class="section">
           <div class="section-title">Professional Summary</div>
-          <div class="summary-text">
-            AI Engineer with 5+ years of full-stack development experience,
-            specialized in agentic AI systems, RAG pipelines, and LLM
-            integrations deployed on AWS. Built multi-agent LangGraph pipelines,
-            autonomous task execution systems, and enterprise-scale web
-            platforms serving 11,000+ users across 4 countries.
-          </div>
+          <div class="summary-text">${data.summary}</div>
         </div>
 
         <!-- SKILLS -->
         <div class="section">
           <div class="section-title">Technical Skills</div>
-          <div class="skills-grid">
-            <div class="skill-row">
-              <div class="skill-category">AI &amp; LLM</div>
-              <div class="skill-tags">
-                <span class="skill-tag">Python</span>
-                <span class="skill-tag">LangChain</span>
-                <span class="skill-tag">LangGraph</span>
-                <span class="skill-tag">LlamaIndex</span>
-                <span class="skill-tag">CrewAI</span>
-                <span class="skill-tag">OpenAI Agents SDK</span>
-                <span class="skill-tag">Vector Databases</span>
-                <span class="skill-tag">LLMs</span>
-                <!-- <span class="skill-tag">Large Language Models (LLMs)</span> -->
-                <span class="skill-tag"
-                  >Retrieval-Augmented Generation (RAG)</span
-                >
-                <span class="skill-tag">Transformer</span>
-                <!-- <span class="skill-tag">Machine Learning</span> -->
-                <span class="skill-tag">ML</span>
-                <span class="skill-tag">NLP</span>
-                <span class="skill-tag">Prompt Engineering</span>
-                <span class="skill-tag">Embeddings</span>
-                <span class="skill-tag">Multi-Agent Systems</span>
-                <span class="skill-tag">FastAPI</span>
-              </div>
-            </div>
-            <div class="skill-row">
-              <div class="skill-category">Cloud &amp; DevOps</div>
-              <div class="skill-tags">
-                <span class="skill-tag">AWS Lambda</span>
-                <span class="skill-tag">SQS</span>
-                <span class="skill-tag">EventBridge</span>
-                <span class="skill-tag">API Gateway</span>
-                <span class="skill-tag">Bedrock</span>
-                <span class="skill-tag">SageMaker</span>
-                <span class="skill-tag">S3 / ECR</span>
-                <span class="skill-tag">Terraform</span>
-                <span class="skill-tag">GitHub Actions</span>
-                <span class="skill-tag">Docker</span>
-                <span class="skill-tag">CI/CD</span>
-              </div>
-            </div>
-            <div class="skill-row">
-              <div class="skill-category">Full-Stack</div>
-              <div class="skill-tags">
-                <span class="skill-tag">React</span>
-                <span class="skill-tag">Next.js</span>
-                <span class="skill-tag">Node.js</span>
-                <span class="skill-tag">TypeScript</span>
-                <span class="skill-tag">Express.js</span>
-                <span class="skill-tag">Web3.js</span>
-                <span class="skill-tag">Redux</span>
-                <span class="skill-tag">GraphQL</span>
-                <span class="skill-tag">WebSockets</span>
-                <span class="skill-tag">Microservices</span>
-                <span class="skill-tag">REST API</span>
-                <span class="skill-tag">Agile</span>
-                <span class="skill-tag">Scrum</span>
-              </div>
-            </div>
-            <div class="skill-row">
-              <div class="skill-category">Databases</div>
-              <div class="skill-tags">
-                <span class="skill-tag">PostgreSQL</span>
-                <span class="skill-tag">MongoDB</span>
-                <span class="skill-tag">ChromaDB</span>
-                <span class="skill-tag">FAISS</span>
-                <span class="skill-tag">Pinecone</span>
-                <span class="skill-tag">Redis</span>
-                <!-- <span class="skill-tag">Semantic Search</span> -->
-                <!-- <span class="skill-tag">BM25</span> -->
-              </div>
-            </div>
+          <div class="skills-grid">${renderSkills(data.skills)}
           </div>
         </div>
 
         <!-- EXPERIENCE -->
         <div class="section">
           <div class="section-title">Experience</div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <div class="exp-role">
-                AI Engineer — Agentic AI &amp; Production Systems
-              </div>
-              <div class="exp-date">Oct 2025 – Present</div>
-            </div>
-            <div class="exp-company">
-              Self-Employed · Independent AI Engineer
-            </div>
-            <div class="exp-subtitle">
-              Designing and developing production agentic AI systems —
-              multi-agent pipelines, RAG architectures, and LLM integrations
-              deployed on AWS.
-            </div>
-            <ul class="exp-bullets">
-              <li>
-                Built an agentic RAG pipeline with a retrieval evaluator agent
-                that filters documents by relevance before generation —
-                improving answer quality in document-heavy use cases.
-              </li>
-              <li>
-                Deployed a distributed multi-agent system on AWS: five Lambda
-                functions (one per agent), S3-backed vector storage, SageMaker
-                embeddings, API Gateway orchestration, and CloudFront + S3 for a
-                Next.js frontend.
-              </li>
-              <li>
-                Deployed IaC pipelines using Terraform and GitHub Actions for
-                automated deployment across AWS Bedrock, Lambda, ECR, S3, and
-                CloudFront.
-              </li>
-            </ul>
-          </div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <div class="exp-role">Senior Software Engineer</div>
-              <div class="exp-date">Oct 2023 – Present</div>
-            </div>
-            <div class="exp-company">tkxel · Lahore, Pakistan</div>
-            <div class="exp-subtitle">
-              Worked on enterprise-scale systems for US-based clients, including
-              workforce platforms and multi-tenant SaaS products.
-            </div>
-            <ul class="exp-bullets">
-              <li>
-                Led a 5-engineer team to revive a 2-year abandoned multi-tenant
-                social platform with no documentation — owned task breakdown, PR
-                reviews, and all technical decisions.
-              </li>
-              <li>
-                Built the scheduling, shift assignment, and DST timezone engine
-                for an enterprise workforce platform — adopted across 50+
-                components, serving 11,000+ users across 170+ franchises in 4
-                countries, with invalid assignments blocked at UI level to
-                prevent payroll errors.
-              </li>
-
-              <li>
-                Reverse-engineered OpenFGA authorization schema from legacy
-                deployments — restored full role-based access control across all
-                admin levels; separately shipped multi-currency Stripe
-                subscriptions (PKR, USD, GBP) on a platform designed for 1M+
-                audience members across 1,000–5,000 brand Hubs.
-              </li>
-            </ul>
-          </div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <div class="exp-role">Software Engineer</div>
-              <div class="exp-date">May 2022 – Oct 2023</div>
-            </div>
-            <div class="exp-company">tkxel · Lahore, Pakistan</div>
-            <div class="exp-subtitle">
-              Built full-stack features for enterprise tools and internal
-              platforms.
-            </div>
-            <ul class="exp-bullets">
-              <li>
-                Delivered enterprise helpdesk features for Tikit, an MS
-                Teams-integrated ticketing platform for high-volume IT, HR, and
-                Finance workflows.
-              </li>
-              <li>
-                Developed a Custom Views system for an MS Teams-integrated
-                enterprise helpdesk — enabled persistent multi-filter
-                configurations across thousands of concurrent tickets.
-              </li>
-            </ul>
-          </div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <div class="exp-role">Software Engineer</div>
-              <div class="exp-date">Oct 2021 – Jan 2022</div>
-            </div>
-            <div class="exp-company">Invozone · Lahore, Pakistan</div>
-            <div class="exp-subtitle">
-              Frontend-led delivery on a multi-chain DEX product for a Web3
-              startup — cross-chain token swaps across four networks using Web3
-              infrastructure.
-            </div>
-            <ul class="exp-bullets">
-              <li>
-                Directed frontend delivery on a multi-chain DEX across Ethereum,
-                BSC, Polygon, and Avalanche — integrated MetaMask and Coinbase
-                wallets via Web3.js.
-              </li>
-            </ul>
-          </div>
-
-          <div class="exp-item">
-            <div class="exp-header">
-              <div class="exp-role">Software Engineer</div>
-              <div class="exp-date">Aug 2020 – Oct 2021</div>
-            </div>
-            <div class="exp-company">OptimusFox · Lahore, Pakistan</div>
-            <div class="exp-subtitle">
-              Built full-stack blockchain-based platforms across fintech and
-              civic tech — led delivery on multiple products.
-            </div>
-            <ul class="exp-bullets">
-              <li>
-                Served as tech lead on a token offering (ITO) platform —
-                designed ERD, owned full-stack architecture, and routed tasks
-                across a 4-engineer team.
-              </li>
-              <li>
-                Built a blockchain-based tamper-resistant e-voting system with
-                three role-based panels — admin, candidate, and voter — with
-                on-chain ballot execution via Web3.js.
-              </li>
-            </ul>
-          </div>
+          ${renderExperience(data.experience)}
         </div>
 
         <!-- PROJECTS -->
         <div class="section">
           <div class="section-title">Projects</div>
-
-          <div class="project-item">
-            <div class="project-header">
-              <div class="project-name">
-                DocInsight — Verified Document Q&amp;A
-              </div>
-              <div class="project-stack">
-                LangGraph · LangChain · ChromaDB · OpenAI · FastAPI
-              </div>
-            </div>
-            <div class="project-desc">
-              A multi-agent RAG system that eliminates manual document review —
-              three specialized agents gate relevance, generate grounded
-              answers, and verify factual support before any response reaches
-              the user. Targets the 1.8 hours/day that knowledge workers lose to
-              unverified information retrieval.
-            </div>
-            <ul class="project-bullets">
-              <li>
-                Built a 3-agent LangGraph pipeline with OpenAI — Relevance
-                Checker, Research Agent, and Verification Agent — answers
-                verified against source passages before being returned to the
-                user.
-              </li>
-              <li>
-                Implemented hybrid retrieval combining BM25 (40%) and ChromaDB
-                vector search (60%) — improves recall on exact-match queries
-                that pure semantic search consistently misses.
-              </li>
-              <li>
-                Designed conditional routing so failed verification triggers
-                automatic re-research — unverified answers never surface to the
-                user.
-              </li>
-            </ul>
-          </div>
-
-          <div class="project-item">
-            <div class="project-header">
-              <div class="project-name">
-                Sidekick — Autonomous AI Work Agent
-              </div>
-              <div class="project-stack">
-                LangGraph · OpenAI · Playwright · Serper API · Python REPL
-              </div>
-            </div>
-            <div class="project-desc">
-              A two-model agentic system that executes multi-step tasks across
-              browser, code, files, and search without human supervision — a
-              structurally independent evaluator verifies success criteria are
-              met before any result is returned. Addresses the 62% of workday
-              spent on tasks that could run unattended and the 9.5 minutes of
-              focus lost each time a worker checks in on a running task.
-            </div>
-            <ul class="project-bullets">
-              <li>
-                Built a two-model LangGraph pipeline — worker executes across
-                browser automation, Python REPL, file I/O, and web search, while
-                a separate evaluator independently verifies task completion,
-                eliminating self-evaluation bias.
-              </li>
-              <li>
-                Implemented typed feedback loop — structured feedback is
-                injected into the worker system prompt on retry, so the agent
-                knows exactly why it failed before reattempting.
-              </li>
-              <li>
-                Built a human-in-the-loop escalation mechanism — when the agent
-                repeats the same mistake after feedback, it surfaces the blocker
-                to the user instead of looping silently.
-              </li>
-            </ul>
-          </div>
-
-          <!-- <div class="project-item">
-            <div class="project-header">
-              <div class="project-name">Enterprise Workforce Platform</div>
-              <div class="project-stack">
-                React · Node.js · MongoDB · Ruby on Rails · PostgreSQL · Azure
-              </div>
-            </div>
-            <div class="project-desc">
-              Franchise-based security workforce management platform serving
-              11,000+ users across 170+ franchises in the US, Canada, UK, and
-              Australia. Consolidated 5+ disconnected operational systems —
-              scheduling, payroll, contracts, attendance, and invoicing — into a
-              single unified platform.
-            </div>
-            <ul class="project-bullets">
-              <li>
-                Anchored all time logic to franchise location rather than
-                browser or system settings — built a single DST layer handling
-                inverted US/Australia cycles simultaneously, eliminating
-                production shift drift across 50+ components.
-              </li>
-              <li>
-                Designed frontend architecture with franchise-level data
-                isolation built in — franchise users see only their operations
-                while platform owners access global data across all 170+
-                franchises; isolation was architectural, not bolted on.
-              </li>
-              <li>
-                Enforced contract boundaries at the UI level during shift
-                assignment — supervisors operate within contract hours and shift
-                states with invalid assignments blocked before they reach
-                payroll.
-              </li>
-            </ul>
-          </div>
-
-          <div class="project-item">
-            <div class="project-header">
-              <div class="project-name">Multi-Tenant Social Platform</div>
-              <div class="project-stack">
-                React · Node.js · GraphQL · MongoDB · OpenFGA · Stripe · AWS
-              </div>
-            </div>
-            <div class="project-desc">
-              Managed a 5-engineer team for 4 months to revive an abandoned
-              multi-tenant social platform inactive for 2 years — restored a
-              fully non-functional system with no documentation, no
-              infrastructure visibility, and no prior ownership handoff.
-            </div>
-            <ul class="project-bullets">
-              <li>
-                Spent 1 month reverse-engineering OpenFGA tuple relationships
-                from broken production deployments — reconstructed Super Admin,
-                Organization Admin, and sub-admin permission hierarchies
-                entirely without documentation.
-              </li>
-              <li>
-                Recovered broken AWS infrastructure (S3, Lambda, ECS) with no
-                prior ownership context — restored core platform workflows
-                including org/hub/circle creation, content management, and
-                audience engagement.
-              </li>
-              <li>
-                Built Stripe multi-currency subscription flow — admins configure
-                pricing per circle in PKR, USD, and GBP simultaneously; audience
-                members subscribe in preferred currency on a platform with zero
-                prior working monetization.
-              </li>
-            </ul>
-          </div> -->
+          ${renderProjects(data.projects)}
         </div>
 
         <!-- EDUCATION + CERTS -->
         <!-- <div class="two-col"> -->
         <div class="section">
           <div class="section-title">Education</div>
-          <div class="edu-item">
-            <div class="edu-degree">BS Software Engineering</div>
-            <div class="edu-school">
-              University of Engineering &amp; Technology, Taxila
-            </div>
-            <div class="edu-location">Rawalpindi, Pakistan</div>
-          </div>
+          ${renderEducation(data.education)}
         </div>
 
         <div class="section">
           <div class="section-title">Certifications</div>
-          <div class="cert-item">
-            <div class="cert-dot"></div>
-            <div>
-              <div class="cert-name">IBM RAG and Agentic AI Specialization</div>
-              <div class="cert-issuer">Coursera · IBM</div>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-dot"></div>
-            <div>
-              <div class="cert-name">
-                AI Engineer Production Track: Deploy LLMs &amp; Agents at Scale
-              </div>
-              <div class="cert-issuer">Udemy · Ed Donner</div>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-dot"></div>
-            <div>
-              <div class="cert-name">
-                Agentic Track: The Complete Agent &amp; MCP Course
-              </div>
-              <div class="cert-issuer">Udemy · Ed Donner</div>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-dot"></div>
-            <div>
-              <div class="cert-name">
-                Serverless Framework Bootcamp: Node.js, AWS &amp; Microservices
-              </div>
-              <div class="cert-issuer">Udemy · Ariel Weinberger</div>
-            </div>
-          </div>
-          <div class="cert-item">
-            <div class="cert-dot"></div>
-            <div>
-              <div class="cert-name">Data Science Internship Certificate</div>
-              <div class="cert-issuer">
-                Skilled Score · Gufhtugu Publications
-              </div>
-            </div>
-          </div>
+          ${renderCertifications(data.certifications)}
         </div>
         <!-- </div> -->
 
         <!-- KEY ACHIEVEMENTS -->
-        <!-- <div class="section">
-          <div class="section-title">Key Achievements</div>
-          <div class="achievement-list">
-            <div class="achievement-item">
-              <div class="achievement-icon">🌍</div>
-              <div class="achievement-text">
-                <strong>11,000+ Users, 4 Countries:</strong> Delivered and
-                maintained an enterprise workforce platform across 170+
-                franchises in the US, Canada, UK, and Australia without
-                production downtime.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">⏱</div>
-              <div class="achievement-text">
-                <strong>Zero Scheduling Errors:</strong> Designed a
-                location-anchored DST timezone engine adopted across 50+
-                components — eliminated all production-level shift scheduling
-                errors for a globally distributed user base.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">🔄</div>
-              <div class="achievement-text">
-                <strong>Revived a Dead Platform:</strong> Led a 5-engineer team
-                to fully restore a 2-year abandoned multi-tenant social platform
-                with no documentation, no infrastructure visibility, and no
-                handoff — shipping live in 4 months.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">🤖</div>
-              <div class="achievement-text">
-                <strong>Production Agentic AI:</strong> Built and deployed a
-                distributed multi-agent system on AWS — five independent Lambda
-                agents with S3-backed vector storage, SageMaker embeddings, and
-                full IaC via Terraform.
-              </div>
-            </div>
-            <div class="achievement-item">
-              <div class="achievement-icon">💳</div>
-              <div class="achievement-text">
-                <strong>Multi-Currency Payments at Scale:</strong> Shipped
-                Stripe subscription billing in PKR, USD, and GBP on a platform
-                designed for 1M+ audience members across 1,000–5,000 brand Hubs.
-              </div>
-            </div>
-          </div>
-        </div> -->
-      </div>
-    </div>
+        ${renderAchievements(data.achievements)}
+      </div>`;
+      }
+
+      render(resumeData);
+    </script>
   </body>
 </html>
