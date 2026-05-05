@@ -402,6 +402,13 @@
         margin-bottom: 10px;
       }
 
+      .edu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
       .edu-degree {
         font-size: 13px;
         font-weight: 600;
@@ -637,7 +644,10 @@
       function renderEducation(education) {
         return education.map(e => `
           <div class="edu-item">
-            <div class="edu-degree">${e.degree}</div>
+            <div class="edu-header">
+              <div class="edu-degree">${e.degree}</div>
+              ${e.date ? `<div class="exp-date">${e.date}</div>` : ''}
+            </div>
             <div class="edu-school">${e.school}</div>
             <div class="edu-location">${e.location}</div>
           </div>`).join('');

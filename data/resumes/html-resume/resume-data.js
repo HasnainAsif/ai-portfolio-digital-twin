@@ -203,28 +203,42 @@ const resumeData = {
   education: [
     {
       degree: 'BS Software Engineering',
+      date: 'Nov 2016 – Aug 2020',
       school: 'University of Engineering & Technology, Taxila',
       location: 'Rawalpindi, Pakistan',
     },
   ],
 
   certifications: [
-    { name: 'IBM RAG and Agentic AI Specialization', issuer: 'Coursera · IBM' },
+    {
+      name: 'IBM RAG and Agentic AI Specialization',
+      issuer: 'Coursera · IBM',
+      issueDate: 'April 2026',
+      url: 'https://www.coursera.org/account/accomplishments/specialization/PG935LLGD2L5',
+    },
     {
       name: 'AI Engineer Production Track: Deploy LLMs & Agents at Scale',
       issuer: 'Udemy · Ed Donner',
+      issueDate: 'April 2026',
+      url: 'https://www.udemy.com/certificate/UC-b5f8fb92-574f-4a86-a28e-bbf43d458bfc/',
     },
     {
-      name: 'Agentic Track: The Complete Agent & MCP Course',
+      name: 'AI Engineer Agentic Track: The Complete Agent & MCP Course',
       issuer: 'Udemy · Ed Donner',
+      issueDate: 'November 2025',
+      url: 'https://www.udemy.com/certificate/UC-90e6842a-729b-4248-9da6-a014d720a943/',
     },
     {
       name: 'Serverless Framework Bootcamp: Node.js, AWS & Microservices',
       issuer: 'Udemy · Ariel Weinberger',
+      issueDate: 'April 2024',
+      url: 'https://www.udemy.com/certificate/UC-33e4439e-66cd-4f0b-b437-8a246dd57335/',
     },
     {
       name: 'Data Science Internship Certificate',
       issuer: 'Skilled Score · Gufhtugu Publications',
+      issueDate: 'October 2025',
+      url: 'https://skilledscore-file-upload-prod.s3.ap-south-1.amazonaws.com/internship_certificate/1761227353568_internship_certificate.pdf',
     },
   ],
 
